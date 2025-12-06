@@ -140,7 +140,7 @@ const AppliedProjects = () => {
                 <StatusBadge status={project.status} />
               </div>
               <p className='text-text-secondary mb-2'>{project.company}</p>
-              <div className='flex items-center gap-3 text-text-secondary mb-3'>
+              <div className='flex items-center gap-3 text-text-secondary mb-5 text-sm'>
                 <span className='flex items-center gap-2'>
                   <FileText className='w-4 h-4' />
                   {project.category}
@@ -156,7 +156,7 @@ const AppliedProjects = () => {
               </div>
               <div className='flex items-center gap-4 mb-3'>
                 {project.skills.map((skill, index) => (
-                  <span className='flex items-center gap-2 bg-blue-50 text-primary px-4 py-1 rounded-xl' key={index}>
+                  <span className='flex items-center gap-2 bg-blue-50 text-primary text-sm px-4 py-1 rounded-xl' key={index}>
                     {skill}
                   </span>
                 ))}

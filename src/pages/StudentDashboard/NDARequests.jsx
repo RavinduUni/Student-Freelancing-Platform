@@ -71,7 +71,7 @@ const NDARequests = () => {
                 <h3 className='text-xl font-semibold '>{nda.projectTitle}</h3>
                 <StatusBadge status={nda.status} />
               </div>
-              <div className='flex gap-5 mt-2'>
+              <div className='flex gap-5 mt-2 text-sm'>
                 <span className='text-text-secondary'>
                   By: {nda.owner}
                 </span>
