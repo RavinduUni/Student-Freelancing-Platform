@@ -221,7 +221,7 @@ const BrowseProjects = () => {
 
   const filteredProjects = projects.filter(project => {
     //Category filter
-    if (selectedCategory !== "all" && project.category !== selectedCategory) {
+    if (selectedCategory.toLowerCase() !== "all" && project.category.toLowerCase() !== selectedCategory.toLowerCase()) {
       return false;
     }
 
