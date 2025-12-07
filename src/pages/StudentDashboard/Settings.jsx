@@ -1,4 +1,4 @@
-import { Bell, CreditCard, Shield, UploadIcon, User, X } from 'lucide-react'
+import { Bell, CreditCard, Edit, SaveIcon, Shield, UploadIcon, User, X } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 
 const Settings = () => {
@@ -13,7 +13,6 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [saved, setSaved] = useState(false);
   const fileInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState({
@@ -65,6 +64,26 @@ const Settings = () => {
     }
   }
 
+  const [tempProfileData, setTempProfileData] = useState(profileData);
+
+  const handleUpdateProfile = () => {
+    setTempProfileData(profileData);
+    setIsEditingProfile(true);
+  }
+
+  const handleSaveChanges = () => {
+    setProfileData(tempProfileData);
+    setIsEditingProfile(false);
+  }
+
+  const handleCancelEdit = () => {
+    setTempProfileData(profileData);
+    setIsEditingProfile(false);
+    setProfilePhoto(null);
+  };
+
+
+
   const renderProfileTab = () => (
     <div className='px-3'>
       <h2 className='text-2xl font-semibold mb-8'>Personal Information</h2>
@@ -74,7 +93,7 @@ const Settings = () => {
           <img className='w-24 h-24 flex items-center justify-center object-cover border-4 border-blue-100 rounded-full' src={profilePhoto} alt="Profile" />
         ) : (
           <div className='w-24 h-24 bg-primary text-white text-3xl flex items-center justify-center rounded-full'>
-            {profileData.fullName.slice(0, 2).toUpperCase()}
+            {tempProfileData.fullName.slice(0, 2).toUpperCase()}
           </div>
         )}
         <div>
@@ -105,8 +124,8 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.fullName}
-            onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
+            value={isEditingProfile ? tempProfileData.fullName : profileData.fullName}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, fullName: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -116,8 +135,8 @@ const Settings = () => {
           <input
             type="email"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.email}
-            onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+            value={isEditingProfile ? tempProfileData.email : profileData.email}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, email: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -127,8 +146,8 @@ const Settings = () => {
           <input
             type='text'
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.phone}
-            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+            value={isEditingProfile ? tempProfileData.phone : profileData.phone}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, phone: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -138,8 +157,8 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.university}
-            onChange={(e) => setProfileData({ ...profileData, university: e.target.value })}
+            value={isEditingProfile ? tempProfileData.university : profileData.university}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, university: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -149,8 +168,8 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.major}
-            onChange={(e) => setProfileData({ ...profileData, major: e.target.value })}
+            value={isEditingProfile ? tempProfileData.major : profileData.major}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, major: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -160,8 +179,8 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.graduationYear}
-            onChange={(e) => setProfileData({ ...profileData, graduationYear: e.target.value })}
+            value={isEditingProfile ? tempProfileData.graduationYear : profileData.graduationYear}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, graduationYear: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -171,8 +190,8 @@ const Settings = () => {
           <textarea
             rows={4}
             className='w-full px-4 py-3 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100'
-            value={profileData.bio}
-            onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+            value={isEditingProfile ? tempProfileData.bio : profileData.bio}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, bio: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -181,13 +200,13 @@ const Settings = () => {
       <div className='my-8'>
         <h2 className='text-2xl font-semibold mb-5'>Skills and Expertise</h2>
         <div className='flex flex-wrap gap-2 items-center w-full'>
-          {profileData.skills.map((skill, index) => (
+          {(isEditingProfile ? tempProfileData.skills : profileData.skills).map((skill, index) => (
             <span className='bg-blue-50 text-primary py-1 px-3 rounded-2xl flex items-center gap-2' key={index}>
               {skill}
               {isEditingProfile && (
                 <button
                   onClick={() => {
-                    setProfileData(prev => ({
+                    setTempProfileData(prev => ({
                       ...prev, skills: prev.skills.filter((_, i) => i !== index)
                     }))
                   }}
@@ -206,8 +225,8 @@ const Settings = () => {
             disabled={!isEditingProfile}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && e.target.value.trim()) {
-                const newSkill = e.target.value.trim(); 
-                setProfileData(prev => ({
+                const newSkill = e.target.value.trim();
+                setTempProfileData(prev => ({
                   ...prev, skills: [...prev.skills, newSkill]
                 }));
                 e.target.value = '';
@@ -225,8 +244,8 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.portfolio}
-            onChange={(e) => setProfileData({ ...profileData, portfolio: e.target.value })}
+            value={isEditingProfile ? tempProfileData.portfolio : profileData.portfolio}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, portfolio: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -236,8 +255,8 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.linkedin}
-            onChange={(e) => setProfileData({ ...profileData, linkedin: e.target.value })}
+            value={isEditingProfile ? tempProfileData.linkedin : profileData.linkedin}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, linkedin: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
@@ -247,14 +266,149 @@ const Settings = () => {
           <input
             type="text"
             className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-            value={profileData.github}
-            onChange={(e) => setProfileData({ ...profileData, github: e.target.value })}
+            value={isEditingProfile ? tempProfileData.github : profileData.github}
+            onChange={(e) => setTempProfileData({ ...tempProfileData, github: e.target.value })}
             disabled={!isEditingProfile}
           />
         </div>
       </div>
+
+      <div className='flex items-center justify-end gap-5 mt-5'>
+        {!isEditingProfile ? (
+          <button>
+            <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+              onClick={handleUpdateProfile}
+            >
+              <Edit className='w-5 h-5' />
+              Update Profile
+            </button>
+          </button>
+        ) : (
+          <>
+            <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+              onClick={handleCancelEdit}
+            >
+              <X className='w-5 h-5' />
+              Cancel
+            </button>
+
+            <button className='flex items-center gap-2 text-white bg-primary border-2 border-primary px-5 py-3 rounded-2xl hover:bg-blue-600 cursor-pointer'
+              onClick={handleSaveChanges}
+            >
+              <SaveIcon className='w-5 h-5' />
+              Save Changes
+            </button>
+          </>
+        )}
+      </div>
     </div>
   )
+
+  const renderNotificationsTab = () => (
+    <div className="px-3">
+      <h2 className="text-2xl font-semibold mb-8">Email Notifications</h2>
+
+      <div className="flex flex-col gap-6">
+        {[
+          {
+            key: "emailNewProjects",
+            label: "New Projects",
+            desc: "Get notified when new projects matching your skills are posted",
+          },
+          {
+            key: "emailApplications",
+            label: "Application Updates",
+            desc: "Receive updates on your project applications",
+          },
+          {
+            key: "emailPayments",
+            label: "Payment Updates",
+            desc: "Get notified about payments and earnings",
+          },
+          {
+            key: "emailNDA",
+            label: "NDA Requests",
+            desc: "Receive notifications for new NDA requests",
+          },
+        ].map((item) => (
+          <div
+            key={item.key}
+            className="flex items-center justify-between  p-4 rounded-2xl border border-border"
+          >
+            {/* Text */}
+            <div>
+              <p>{item.label}</p>
+              <p className="text-text-secondary mt-2">{item.desc}</p>
+            </div>
+
+            {/* Toggle */}
+            <label className="cursor-pointer flex items-center">
+              <input
+                type="checkbox"
+                className="hidden"
+                checked={notifications[item.key]}
+                onChange={(e) =>
+                  setNotifications({
+                    ...notifications,
+                    [item.key]: e.target.checked,
+                  })
+                }
+              />
+              <div className={`w-12 h-6 flex items-center rounded-full p-1 transition duration-300 ${notifications[item.key] ? "bg-primary" : "bg-gray-300"}`}>
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow transform transition duration-300 ${notifications[item.key] ? "translate-x-6" : ""
+                    }`}
+                />
+              </div>
+            </label>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="text-2xl font-semibold my-8">Push Notifications</h2>
+
+      <div className='flex flex-col gap-6'>
+        {[
+          { key: 'pushNewProjects', label: 'New Projects', desc: 'Browser notifications for new projects' },
+          { key: 'pushApplications', label: 'Application Updates', desc: 'Browser notifications for application updates' },
+          { key: 'pushPayments', label: 'Payment Updates', desc: 'Browser notifications for payments' },
+          { key: 'pushNDA', label: 'NDA Requests', desc: 'Browser notifications for NDA requests' }
+        ].map((item) => (
+          <div key={item.key} className='flex items-center justify-between p-4 rounded-2xl border border-border'>
+            <div>
+              <p>{item.label}</p>
+              <p className="text-text-secondary mt-2">{item.desc}</p>
+            </div>
+
+            <label className="cursor-pointer flex items-center">
+              <input type="checkbox"
+                className='hidden'
+                checked={notifications[item.key]}
+                onChange={(e) => {
+                  setNotifications({
+                    ...notifications, [item.key]: e.target.checked
+                  })
+                }}
+              />
+
+              <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all duration-300 ${notifications[item.key] ? 'bg-primary' : 'bg-gray-300'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-all duration-300 ${notifications[item.key] ? 'translate-x-6' : ''}`} />
+              </div>
+            </label>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
+
+
+  const renderSecurityTab = () => (
+    <div>
+
+    </div>
+  )
+
 
 
   return (
@@ -271,7 +425,7 @@ const Settings = () => {
             return (
               <button
                 key={tab.id}
-                className={`flex items-center gap-2 py-3 px-4 rounded-2xl ${activeTab === tab.id ? 'text-primary bg-blue-50' : 'text-text-secondary'}`}
+                className={`flex items-center gap-2 py-3 px-4 rounded-2xl cursor-pointer ${activeTab === tab.id ? 'text-primary bg-blue-50' : 'text-text-secondary'}`}
                 onClick={() => setActiveTab(tab.id)}
               >
                 <Icon className='w-5 h-5' />
@@ -283,7 +437,9 @@ const Settings = () => {
       </div>
 
       <div className='mt-7'>
-        {renderProfileTab()}
+        {activeTab === 'profile' && renderProfileTab()}
+        {activeTab === 'notifications' && renderNotificationsTab()}
+        {activeTab === 'security' && renderSecurityTab()}
       </div>
     </div>
   )
