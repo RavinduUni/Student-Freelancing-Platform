@@ -180,10 +180,10 @@ const Hero = () => {
     return (
         <div className='container px-20 my-10 mx-auto'>
             <div className='relative text-white p-20 flex flex-col items-center justify-center min-h-[90vh] rounded-lg mb-10 text-center bg-cover bg-center' style={{ backgroundImage: `url(${heroImg1})` }}>
-                <div className='absolute inset-0 bg-linear-to-r from-primary-dark via-primary/90 to-transparent' />
+                <div className='absolute inset-0 bg-linear-to-r from-primary-dark via-primary  to-transparent' />
                 <div className='relative z-10'>
-                    <h2 className='text-5xl/13 mb-4 font-semibold'>Connect Students With,  <br /> <span className='bg-clip-text bg-linear-to-t from-blue-800 to-blue-300 text-transparent'>Real-World Projects</span></h2>
-                    <p className='text-sm font-light mb-8'>The premier platform matching university students with paid freelance micro-projects.<br /> Build your portfolio, earn money, and gain real-world experience.</p>
+                    <h2 className='text-5xl/13 mb-4 font-semibold'>Connect Students With,  <br /> <span className='bg-clip-text bg-linear-to-t from-cyan-500 to-cyan-100 text-transparent'>Real-World Projects</span></h2>
+                    <p className='text-md font-light mb-8'>The premier platform matching university students with paid freelance micro-projects.<br /> Build your portfolio, earn money, and gain real-world experience.</p>
 
                     <div className='bg-white rounded-2xl px-3 py-2 text-black flex justify-between items-center w-full max-w-2xl mx-auto'>
                         <div className='flex items-center'>
@@ -198,7 +198,7 @@ const Hero = () => {
                     </div>
 
                     <div>
-                        <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-9'>
+                        <div className='grid grid-cols-1 md:grid-cols-4 gap-10 mt-9'>
                             {stats.map((stat, index) => (
                                 <div key={index} className=' rounded-lg text-center'>
                                     <stat.icon className='text-white mx-auto mb-4' size={40} />
