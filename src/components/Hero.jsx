@@ -179,10 +179,10 @@ const Hero = () => {
 
     return (
         <div className='container px-20 my-10 mx-auto'>
-            <div className='relative text-white p-20 flex flex-col items-center justify-center min-h-[90vh] rounded-lg mb-10 text-center bg-cover bg-center' style={{ backgroundImage: `url(${heroImg1})` }}>
-                <div className='absolute inset-0 bg-linear-to-r from-primary-dark via-primary  to-transparent' />
+            <div data-aos="fade-up" className='relative text-white p-20 flex flex-col items-center justify-center min-h-[90vh] rounded-2xl mb-10 text-center bg-cover bg-bottom-left' style={{ backgroundImage: `url(${heroImg1})` }}>
+                <div className='absolute rounded-2xl inset-0 bg-linear-to-r from-primary-dark via-primary  to-transparent' />
                 <div className='relative z-10'>
-                    <h2 className='text-5xl/13 mb-4 font-semibold'>Connect Students With,  <br /> <span className='bg-clip-text bg-linear-to-t from-cyan-500 to-cyan-100 text-transparent'>Real-World Projects</span></h2>
+                    <h2 className='text-5xl/13 mb-4 font-semibold'>Connect Students With,  <br /> <span className='bg-clip-text bg-linear-to-t  from-blue-600 to-blue-100 text-transparent'>Real-World Projects</span></h2>
                     <p className='text-md font-light mb-8'>The premier platform matching university students with paid freelance micro-projects.<br /> Build your portfolio, earn money, and gain real-world experience.</p>
 
                     <div className='bg-white rounded-2xl px-3 py-2 text-black flex justify-between items-center w-full max-w-2xl mx-auto'>
@@ -212,7 +212,7 @@ const Hero = () => {
             </div>
 
 
-            <div className='mt-16 bg-linear-to-br from-blue-50 to-purple-50 rounded-2xl p-15'>
+            <div data-aos="fade-up" className='mt-16 bg-linear-to-br from-blue-50 to-purple-50 rounded-2xl p-15'>
                 <div className='flex justify-center items-center gap-8 flex-wrap'>
                     <div className='text-center'>
                         <div className='rounded-full bg-white w-24 h-24 flex justify-center items-center shadow-md mx-auto mb-2'>
@@ -242,7 +242,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className='py-10'>
+            <div data-aos="fade-up"  className='py-10'>
                 <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-16'>
                     {steps.map((step, index) => (
                         <div key={index} className='bg-white p-6 rounded-lg text-center'>
@@ -254,7 +254,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className='mt-20'>
+            <div data-aos="fade-up"  className='mt-20'>
                 <div className='text-center'>
                     <h3 className='text-4xl font-semibold'>Browse by Category</h3>
                     <p className='text-text-secondary'>Find projects in your area of expertise</p>
@@ -278,7 +278,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className='py-20 px-4 mt-30 bg-background rounded-xl'>
+            <div data-aos="fade-up"  className='py-20 px-4 mt-30 bg-background rounded-xl'>
                 <div className='flex justify-between px-2'>
                     <div>
                         <h2 className='font-semibold text-4xl'>Latest Projects</h2>
@@ -299,7 +299,7 @@ const Hero = () => {
             </div>
 
 
-            <div className='mt-20'>
+            <div data-aos="fade-up"  className='mt-20'>
                 <h1 className='text-center my-20 text-4xl font-semibold'>What Our Users Say</h1>
                 <div className='grid grid-cols-3 gap-10'>
                     {testimonials.slice(0, 6).map((testimonial, index) => (
@@ -326,7 +326,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className='mt-20'>
+            <div data-aos="fade-up" className='mt-20'>
                 <div className='text-center bg-primary p-30 rounded-xl'>
                     <h1 className='text-white text-4xl font-semibold'>Ready to Get Started?</h1>
                     <p className='text-white my-5'>Join thousands of students and project owners already using StudentFreelance</p>

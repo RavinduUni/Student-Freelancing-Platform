@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Applications from './pages/Applications'
@@ -12,8 +12,19 @@ import NDARequests from './pages/StudentDashboard/NDARequests'
 import Submissions from './pages/StudentDashboard/Submissions'
 import Wallet from './pages/StudentDashboard/Wallet'
 import Settings from './pages/StudentDashboard/Settings'
+import Aos from 'aos'
+import "aos/dist/aos.css";
 
 const App = () => {
+
+  useEffect(() => {
+    Aos.init({
+      duration: 800,        // animation duration (ms)
+      once: true,           // animate only once
+      easing: "ease-in-out" // smooth animation
+    });
+  }, []);
+
   return (
     <div>
       <Routes>
