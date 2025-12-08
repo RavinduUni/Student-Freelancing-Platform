@@ -195,8 +195,8 @@ const AuthPage = () => {
                         <button className='bg-primary text-white py-3 rounded-xl mt-2'>Create Account</button>
 
                         <div className='flex items-center justify-center gap-2'>
-                            <p className='text-text-secondary'>Already have an account? </p>
-                            <button className='text-primary'>Login</button>
+                            <p className='text-text-secondary'>{type === 'register' ? 'Already have an account?' : "Dont have an account?"} </p>
+                            <button className='text-primary'>{type === 'register' ? 'Login' : "Register"}</button>
                         </div>
                     </form>
                 </div>

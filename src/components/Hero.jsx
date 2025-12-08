@@ -3,6 +3,7 @@ import { assets } from '../assets/assets'
 import { ArrowRight, Brain, Briefcase, BriefcaseBusiness, ChevronRight, Code, DollarSign, Palette, Search, Smartphone, Star, TrendingUp, Users } from 'lucide-react'
 import ProjectCard from './ProjectCard';
 import { useNavigate } from 'react-router-dom';
+import heroImg1 from '../assets/heroImg1.jpg';
 
 const Hero = () => {
 
@@ -178,36 +179,40 @@ const Hero = () => {
 
     return (
         <div className='container px-20 my-10 mx-auto'>
-            <div className='bg-primary text-white p-20 rounded-lg mb-10 text-center'>
-                <h2 className='text-4xl mb-4 font-semibold'>Connect Students With Real-World <br /> Projects</h2>
-                <p className='text-sm font-light mb-8'>The premier platform matching university students with paid freelance micro-projects.<br /> Build your portfolio, earn money, and gain real-world experience.</p>
+            <div className='relative text-white p-20 flex flex-col items-center justify-center min-h-[90vh] rounded-lg mb-10 text-center bg-cover bg-center' style={{ backgroundImage: `url(${heroImg1})` }}>
+                <div className='absolute inset-0 bg-linear-to-r from-primary-dark via-primary/90 to-transparent' />
+                <div className='relative z-10'>
+                    <h2 className='text-5xl/13 mb-4 font-semibold'>Connect Students With,  <br /> <span className='bg-clip-text bg-linear-to-t from-blue-800 to-blue-300 text-transparent'>Real-World Projects</span></h2>
+                    <p className='text-sm font-light mb-8'>The premier platform matching university students with paid freelance micro-projects.<br /> Build your portfolio, earn money, and gain real-world experience.</p>
 
-                <div className='bg-white rounded-lg p-3 text-black flex justify-between items-center w-full max-w-2xl mx-auto'>
-                    <div className='flex items-center'>
-                        <Search className='inline-block mr-2 opacity-35' />
-                        <input type="text" placeholder='Search For Project' className='bg-transparent border-gray-300 focus:outline-none focus:border-blue-600' />
-                    </div>
-                    <div className='ml-4 flex items-center'>
-                        <BriefcaseBusiness className='inline-block mr-2 opacity-35' />
-                        <input type="text" placeholder='Skill' className='bg-transparent border-gray-300 focus:outline-none focus:border-blue-600' />
-                    </div>
-                    <button className='bg-blue-600 text-white px-6 py-3 rounded-md font-medium'>Search</button>
-                </div>
-            </div>
-
-            <div>
-                <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-16'>
-                    {stats.map((stat, index) => (
-                        <div key={index} className='bg-white p-6 rounded-lg text-center'>
-                            <stat.icon className='text-primary mx-auto mb-4' size={40} />
-                            <h3 className='text-2xl font-semibold mb-2'>{stat.value}</h3>
-                            <p className='text-gray-600'>{stat.label}</p>
+                    <div className='bg-white rounded-2xl px-3 py-2 text-black flex justify-between items-center w-full max-w-2xl mx-auto'>
+                        <div className='flex items-center'>
+                            <Search className='inline-block mr-2 opacity-35' />
+                            <input type="text" placeholder='Search For Project' className='bg-transparent border-gray-300 focus:outline-none focus:border-blue-600' />
                         </div>
-                    ))}
+                        <div className='ml-4 flex items-center'>
+                            <BriefcaseBusiness className='inline-block mr-2 opacity-35' />
+                            <input type="text" placeholder='Skill' className='bg-transparent border-gray-300 focus:outline-none focus:border-blue-600' />
+                        </div>
+                        <button className='bg-blue-600 text-white px-6 py-3 rounded-2xl font-medium'>Search</button>
+                    </div>
+
+                    <div>
+                        <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-9'>
+                            {stats.map((stat, index) => (
+                                <div key={index} className=' rounded-lg text-center'>
+                                    <stat.icon className='text-white mx-auto mb-4' size={40} />
+                                    <h3 className='text-2xl text-black font-semibold mb-2'>{stat.value}</h3>
+                                    <p className='text-white'>{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className='mt-16 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-15'>
+
+            <div className='mt-16 bg-linear-to-br from-blue-50 to-purple-50 rounded-2xl p-15'>
                 <div className='flex justify-center items-center gap-8 flex-wrap'>
                     <div className='text-center'>
                         <div className='rounded-full bg-white w-24 h-24 flex justify-center items-center shadow-md mx-auto mb-2'>
@@ -288,7 +293,7 @@ const Hero = () => {
 
                 <div className='grid grid-cols-3 gap-10 mt-15'>
                     {latestProjects.map((project, id) => (
-                        <ProjectCard  key={id} project={project} />
+                        <ProjectCard key={id} project={project} />
                     ))}
                 </div>
             </div>
@@ -297,7 +302,7 @@ const Hero = () => {
             <div className='mt-20'>
                 <h1 className='text-center my-20 text-4xl font-semibold'>What Our Users Say</h1>
                 <div className='grid grid-cols-3 gap-10'>
-                    {testimonials.slice(0,6).map((testimonial, index) => (
+                    {testimonials.slice(0, 6).map((testimonial, index) => (
                         <div key={index} className='shadow-md p-5 rounded-xl'>
                             <div className='flex items-center my-3'>
                                 <span className='text-5xl'>{testimonial.image}</span>
@@ -307,9 +312,9 @@ const Hero = () => {
                                 </div>
                             </div>
                             <p className='text-gray-800'>{testimonial.text}</p>
-                            
+
                             <div className='flex items-center gap-1 mt-3'>
-                                {[1,2,3,4,5].map((star, index) => (
+                                {[1, 2, 3, 4, 5].map((star, index) => (
                                     <Star key={index} className={star <= testimonial.rate
                                         ? 'w-5 h-5 text-yellow-500 fill-yellow-500'
                                         : "w-5 h-5 text-gray-300"
