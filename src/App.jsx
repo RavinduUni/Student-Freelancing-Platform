@@ -58,10 +58,10 @@ const App = () => {
 
           <Route path="projects" element={<Projects />} />
           <Route path="create-project" element={<CreateProject />} />
-          <Route path="nda-management" element={<NDAManagement />} />
+          <Route path="owner-nda" element={<NDAManagement />} />
           <Route path="all-applicants" element={<AllApplicant />} />
           <Route path="payments" element={<Payments />} />
-          <Route path="settings" element={<OwnerSettings />} />
+          <Route path="owner-settings" element={<OwnerSettings />} />
 
         </Route>
 

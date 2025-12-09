@@ -2,7 +2,9 @@ import React from 'react'
 
 const OwnerDashboardLanding = () => {
   return (
-    <div>OwnerDashboardLanding</div>
+    <div>
+      
+    </div>
   )
 }
 
