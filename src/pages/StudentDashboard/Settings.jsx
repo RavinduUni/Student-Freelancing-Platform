@@ -12,6 +12,7 @@ const Settings = () => {
 
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isEditingNotifications, setIsEditingNotifications] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -58,13 +59,14 @@ const Settings = () => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePhoto(reader.result);
+        setTempProfilePhoto(reader.result);
       };
       reader.readAsDataURL(file);
     }
   }
 
   const [tempProfileData, setTempProfileData] = useState(profileData);
+  const [tempProfilePhoto, setTempProfilePhoto] = useState(profilePhoto);
 
   const handleUpdateProfile = () => {
     setTempProfileData(profileData);
@@ -73,15 +75,32 @@ const Settings = () => {
 
   const handleSaveChanges = () => {
     setProfileData(tempProfileData);
+    setProfilePhoto(tempProfilePhoto);
     setIsEditingProfile(false);
   }
 
   const handleCancelEdit = () => {
     setTempProfileData(profileData);
     setIsEditingProfile(false);
-    setProfilePhoto(null);
+    setTempProfilePhoto(profilePhoto);
   };
 
+
+  const [tempNotificationData, setTempNotificationData] = useState(notifications);
+
+  const handleSaveNotifications = () => {
+    setNotifications(tempNotificationData);
+    setIsEditingNotifications(false);
+  }
+
+  const handleCancelNotifications = () => {
+    setTempNotificationData(notifications);
+    setIsEditingNotifications(false);
+  }
+
+  const handleUpdateNotifications = () => {
+    setIsEditingNotifications(true);
+  }
 
 
   const renderProfileTab = () => (
@@ -89,12 +108,22 @@ const Settings = () => {
       <h2 className='text-2xl font-semibold mb-8'>Personal Information</h2>
 
       <div className='flex items-center gap-8'>
-        {profilePhoto ? (
-          <img className='w-24 h-24 flex items-center justify-center object-cover border-4 border-blue-100 rounded-full' src={profilePhoto} alt="Profile" />
+        {isEditingProfile ? (
+          tempProfilePhoto ? (
+            <img className='w-24 h-24 flex items-center justify-center object-cover border-4 border-blue-100 rounded-full' src={tempProfilePhoto} alt="Profile" />
+          ) : (
+            <div className='w-24 h-24 bg-primary text-white text-3xl flex items-center justify-center rounded-full'>
+              {tempProfileData.fullName.slice(0, 2).toUpperCase()}
+            </div>
+          )
         ) : (
-          <div className='w-24 h-24 bg-primary text-white text-3xl flex items-center justify-center rounded-full'>
-            {tempProfileData.fullName.slice(0, 2).toUpperCase()}
-          </div>
+          profilePhoto ? (
+            <img className='w-24 h-24 flex items-center justify-center object-cover border-4 border-blue-100 rounded-full' src={profilePhoto} alt="Profile" />
+          ) : (
+            <div className='w-24 h-24 bg-primary text-white text-3xl flex items-center justify-center rounded-full'>
+              {profileData.fullName.slice(0, 2).toUpperCase()}
+            </div>
+          )
         )}
         <div>
           <input
@@ -275,14 +304,14 @@ const Settings = () => {
 
       <div className='flex items-center justify-end gap-5 mt-5'>
         {!isEditingProfile ? (
-          <button>
-            <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
-              onClick={handleUpdateProfile}
-            >
-              <Edit className='w-5 h-5' />
-              Update Profile
-            </button>
+
+          <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+            onClick={handleUpdateProfile}
+          >
+            <Edit className='w-5 h-5' />
+            Update Profile
           </button>
+
         ) : (
           <>
             <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
@@ -301,7 +330,7 @@ const Settings = () => {
           </>
         )}
       </div>
-    </div>
+    </div >
   )
 
   const renderNotificationsTab = () => (
@@ -342,25 +371,36 @@ const Settings = () => {
             </div>
 
             {/* Toggle */}
-            <label className="cursor-pointer flex items-center">
-              <input
-                type="checkbox"
-                className="hidden"
-                checked={notifications[item.key]}
-                onChange={(e) =>
-                  setNotifications({
-                    ...notifications,
-                    [item.key]: e.target.checked,
-                  })
-                }
-              />
-              <div className={`w-12 h-6 flex items-center rounded-full p-1 transition duration-300 ${notifications[item.key] ? "bg-primary" : "bg-gray-300"}`}>
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow transform transition duration-300 ${notifications[item.key] ? "translate-x-6" : ""
-                    }`}
+            {isEditingNotifications ? (
+              <label className="cursor-pointer flex items-center">
+                <input type="checkbox"
+                  className='hidden'
+                  checked={tempNotificationData[item.key]}
+                  onChange={(e) => {
+                    setTempNotificationData({
+                      ...tempNotificationData, [item.key]: e.target.checked
+                    })
+                  }}
                 />
-              </div>
-            </label>
+
+                <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all duration-300 ${tempNotificationData[item.key] ? 'bg-primary' : 'bg-gray-300'}`}>
+                  <div className={`w-4 h-4 bg-white rounded-full transition-all duration-300 ${tempNotificationData[item.key] ? 'translate-x-6' : ''}`} />
+                </div>
+              </label>
+            ) : (
+              <label className="cursor-pointer flex items-center opacity-60 pointer-events-none">
+                <input type="checkbox"
+                  className='hidden'
+                  disabled
+                  checked={notifications[item.key]}
+
+                />
+
+                <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all duration-300 ${notifications[item.key] ? 'bg-primary' : 'bg-gray-300'}`}>
+                  <div className={`w-4 h-4 bg-white rounded-full transition-all duration-300 ${notifications[item.key] ? 'translate-x-6' : ''}`} />
+                </div>
+              </label>
+            )}
           </div>
         ))}
       </div>
@@ -380,23 +420,65 @@ const Settings = () => {
               <p className="text-text-secondary mt-2">{item.desc}</p>
             </div>
 
-            <label className="cursor-pointer flex items-center">
-              <input type="checkbox"
-                className='hidden'
-                checked={notifications[item.key]}
-                onChange={(e) => {
-                  setNotifications({
-                    ...notifications, [item.key]: e.target.checked
-                  })
-                }}
-              />
+            {isEditingNotifications ? (
+              <label className="cursor-pointer flex items-center">
+                <input type="checkbox"
+                  className='hidden'
+                  checked={tempNotificationData[item.key]}
+                  onChange={(e) => {
+                    setTempNotificationData({
+                      ...tempNotificationData, [item.key]: e.target.checked
+                    })
+                  }}
+                />
 
-              <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all duration-300 ${notifications[item.key] ? 'bg-primary' : 'bg-gray-300'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-all duration-300 ${notifications[item.key] ? 'translate-x-6' : ''}`} />
-              </div>
-            </label>
+                <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all duration-300 ${tempNotificationData[item.key] ? 'bg-primary' : 'bg-gray-300'}`}>
+                  <div className={`w-4 h-4 bg-white rounded-full transition-all duration-300 ${tempNotificationData[item.key] ? 'translate-x-6' : ''}`} />
+                </div>
+              </label>
+            ) : (
+              <label className="cursor-pointer flex items-center opacity-60 pointer-events-none">
+                <input type="checkbox"
+                  className='hidden'
+                  disabled
+                  checked={notifications[item.key]}
+
+                />
+
+                <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all duration-300 ${notifications[item.key] ? 'bg-primary' : 'bg-gray-300'}`}>
+                  <div className={`w-4 h-4 bg-white rounded-full transition-all duration-300 ${notifications[item.key] ? 'translate-x-6' : ''}`} />
+                </div>
+              </label>
+            )}
           </div>
         ))}
+      </div>
+
+      <div className='flex items-center justify-end gap-5 mt-5'>
+        {isEditingNotifications ? (
+          <>
+            <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+              onClick={handleCancelNotifications}
+            >
+              <X className='w-5 h-5' />
+              Cancel
+            </button>
+
+            <button className='flex items-center gap-2 text-white bg-primary border-2 border-primary px-5 py-3 rounded-2xl hover:bg-blue-600 cursor-pointer'
+              onClick={handleSaveNotifications}
+            >
+              <SaveIcon className='w-5 h-5' />
+              Save Changes
+            </button>
+          </>
+        ) : (
+          <button className='flex items-center gap-2 text-white bg-primary border-2 border-primary px-5 py-3 rounded-2xl hover:bg-blue-600 cursor-pointer'
+            onClick={handleUpdateNotifications}
+          >
+            <Edit className='w-5 h-5' />
+            Update Notifications
+          </button>
+        )}
       </div>
 
     </div>

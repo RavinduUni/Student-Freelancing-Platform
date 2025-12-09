@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Applications from './pages/Applications'
 import ProjectDetail from './pages/ProjectDetail'
 import AuthPage from './pages/AuthPage'
 import StudentDashBoard from './pages/StudentDashboard/StudentDashBoard'
@@ -14,6 +13,14 @@ import Wallet from './pages/StudentDashboard/Wallet'
 import Settings from './pages/StudentDashboard/Settings'
 import Aos from 'aos'
 import "aos/dist/aos.css";
+import OwnerDashBoard from './pages/OwnerDashboard/OwnerDashBoard'
+import OwnerDashboardLanding from './pages/OwnerDashboard/OwnerDashboardLanding'
+import Projects from './pages/OwnerDashboard/Projects'
+import CreateProject from './pages/OwnerDashboard/CreateProject'
+import NDAManagement from './pages/OwnerDashboard/NDAManagement'
+import AllApplicant from './pages/OwnerDashboard/AllApplicant'
+import Payments from './pages/OwnerDashboard/Payments'
+import OwnerSettings from './pages/OwnerDashboard/OwnerSettings'
 
 const App = () => {
 
@@ -31,7 +38,6 @@ const App = () => {
         <Route path='/' element={<Home />} />
         <Route path='/auth' element={<AuthPage />} />
         <Route path='/apply-project/:id' element={<ProjectDetail />} />
-        <Route path='/applications' element={<Applications />} />
         
         <Route path="/student-dashboard" element={<StudentDashBoard />}>
 
@@ -45,6 +51,20 @@ const App = () => {
           <Route path="settings" element={<Settings />} />
 
         </Route>
+
+        <Route path="/owner-dashboard" element={<OwnerDashBoard />}>
+
+          <Route index element={<OwnerDashboardLanding />} />
+
+          <Route path="projects" element={<Projects />} />
+          <Route path="create-project" element={<CreateProject />} />
+          <Route path="nda-management" element={<NDAManagement />} />
+          <Route path="all-applicants" element={<AllApplicant />} />
+          <Route path="payments" element={<Payments />} />
+          <Route path="settings" element={<OwnerSettings />} />
+
+        </Route>
+
 
       </Routes>
     </div>
