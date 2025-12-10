@@ -116,7 +116,7 @@ const ProjectDetail = () => {
                 <div className='grid grid-cols-3 gap-5'>
                     {project ? (
                         <>
-                            <div className='col-span-2 bg-white p-8 shadow rounded-2xl'>
+                            <div className='col-span-2 bg-white p-8 shadow-lg rounded-2xl'>
                                 <h3 className='text-primary text-sm bg-blue-50 py-1 px-3 rounded-4xl inline-block'>{project.category}</h3>
                                 <h1 className='text-4xl font-bold my-5'>{project.title}</h1>
 
