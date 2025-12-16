@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { assets } from '../assets/assets'
 import { ArrowRight, Brain, Briefcase, BriefcaseBusiness, ChevronRight, Code, DollarSign, Palette, Search, Smartphone, Star, TrendingUp, Users } from 'lucide-react'
 import ProjectCard from './ProjectCard';
 import { useNavigate } from 'react-router-dom';
 import heroImg1 from '../assets/heroImg1.jpg';
 import heroImg2 from '../assets/heroImg2.jpg';
+import gsap from 'gsap';
+import TestimonialCard from './TestimonialCard';
 
 const Hero = () => {
 
@@ -174,8 +176,99 @@ const Hero = () => {
             image: '👩‍🎨',
             text: 'Built my portfolio while earning money. Best platform for student freelancers!',
             rate: 4.7
+        },
+        {
+            name: 'Sarah Chen',
+            role: 'CS Student, MIT',
+            image: '👩‍💻',
+            text: 'I earned $3,500 last semester working on real projects. Amazing experience!',
+            rate: 5
+        },
+        {
+            name: 'Mike Johnson',
+            role: 'Startup Founder',
+            image: '👨‍💼',
+            text: 'Found talented students who delivered quality work at reasonable rates.',
+            rate: 4.5
+        },
+        {
+            name: 'Emma Davis',
+            role: 'Design Student, UCLA',
+            image: '👩‍🎨',
+            text: 'Built my portfolio while earning money. Best platform for student freelancers!',
+            rate: 4.7
+        },
+        {
+            name: 'Sarah Chen',
+            role: 'CS Student, MIT',
+            image: '👩‍💻',
+            text: 'I earned $3,500 last semester working on real projects. Amazing experience!',
+            rate: 5
+        },
+        {
+            name: 'Mike Johnson',
+            role: 'Startup Founder',
+            image: '👨‍💼',
+            text: 'Found talented students who delivered quality work at reasonable rates.',
+            rate: 4.5
+        },
+        {
+            name: 'Emma Davis',
+            role: 'Design Student, UCLA',
+            image: '👩‍🎨',
+            text: 'Built my portfolio while earning money. Best platform for student freelancers!',
+            rate: 4.7
         }
     ];
+
+    const firstRow = testimonials.slice(0, 3);
+    const secondRow = testimonials.slice(3, 6);
+
+    const row1Ref = useRef(null);
+    const row2Ref = useRef(null);
+
+    useEffect(() => {
+        const row1 = row1Ref.current;
+        const row2 = row2Ref.current;
+
+        const row1Width = row1.scrollWidth / 2;
+        const row2Width = row2.scrollWidth / 2;
+
+        // ROW 1 → RIGHT
+        gsap.fromTo(
+            row1,
+            { x: 0 },
+            {
+                x: row1Width,
+                duration: 30,
+                ease: "none",
+                repeat: -1,
+                modifiers: {
+                    x: (x) => `${parseFloat(x) % row1Width}px`
+                }
+            }
+        );
+
+        // ROW 2 → LEFT
+        gsap.fromTo(
+            row2,
+            { x: 0 },
+            {
+                x: -row2Width,
+                duration: 30,
+                ease: "none",
+                repeat: -1,
+                modifiers: {
+                    x: (x) => {
+                        const value = parseFloat(x) % row2Width;
+                        return `${value - row2Width}px`;
+                    }
+                }
+            }
+        );
+    }, []);
+
+
 
 
     return (
@@ -300,31 +393,24 @@ const Hero = () => {
             </div>
 
 
-            <div data-aos="fade-up" className='mt-20'>
+            <div data-aos="fade-up" className='mt-20 overflow-hidden'>
                 <h1 className='text-center my-20 text-4xl font-semibold'>What Our Users Say</h1>
-                <div className='grid grid-cols-3 gap-10'>
-                    {testimonials.slice(0, 6).map((testimonial, index) => (
-                        <div key={index} className='shadow-md p-5 rounded-xl'>
-                            <div className='flex items-center my-3'>
-                                <span className='text-5xl'>{testimonial.image}</span>
-                                <div>
-                                    <h2 className='text-xl font-semibold '>{testimonial.name}</h2>
-                                    <p className='text-gray-500'>{testimonial.role}</p>
-                                </div>
-                            </div>
-                            <p className='text-gray-800'>{testimonial.text}</p>
-
-                            <div className='flex items-center gap-1 mt-3'>
-                                {[1, 2, 3, 4, 5].map((star, index) => (
-                                    <Star key={index} className={star <= testimonial.rate
-                                        ? 'w-5 h-5 text-yellow-500 fill-yellow-500'
-                                        : "w-5 h-5 text-gray-300"
-                                    } />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+                <div className="overflow-hidden py-2">
+                    <div ref={row1Ref} className="flex gap-10">
+                        {[...firstRow, ...firstRow].map((t, i) => (
+                            <TestimonialCard key={`r1-${i}`} testimonial={t} />
+                        ))}
+                    </div>
                 </div>
+
+                <div className="overflow-hidden mt-10 py-2">
+                    <div ref={row2Ref} className="flex gap-10">
+                        {[...secondRow, ...secondRow].map((t, i) => (
+                            <TestimonialCard key={`r2-${i}`} testimonial={t} />
+                        ))}
+                    </div>
+                </div>
+
             </div>
 
             <div data-aos="fade-up" className='mt-20 relative'>

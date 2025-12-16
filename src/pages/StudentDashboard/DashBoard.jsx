@@ -47,13 +47,13 @@ const DashBoard = () => {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className='bg-white rounded-lg shadow-md p-6'>
-              <div className='flex items-center justify-between mb-4'>
+            <div key={index} className='bg-white text-center rounded-lg shadow-md p-6 hover:scale-105 transition-all duration-300 cursor-pointer'>
+              <div className='flex items-center justify-center mb-4'>
                 <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
                   <Icon />
                 </div>
               </div>
-              <div className="text-secondary mb-1">{stat.value}</div>
+              <div className="text-secondary mb-1 text-xl font-semibold">{stat.value}</div>
               <p className="text-text-secondary">{stat.label}</p>
             </div>
           )

@@ -22,7 +22,7 @@ const OwnerDashBoard = () => {
             <div className='container px-20 mx-auto flex bg-background'>
 
                 {/* Left side Pannel */}
-                <div className='flex-1 bg-white border-x border-border px-4 py-6 min-h-screen'>
+                <div className='flex-1 bg-white shadow border-x border-border px-4 py-6 min-h-screen'>
                     <ul className='flex flex-col gap-2'>
                         <NavLink
                             to=""

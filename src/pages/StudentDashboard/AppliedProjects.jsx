@@ -134,8 +134,8 @@ const AppliedProjects = () => {
       <div className='mt-10'>
         <div className='grid grid-cols-1 gap-5'>
           {filteredProjects.map((project) => (
-            <div className='bg-white shadow p-6 rounded-xl' key={project.id}>
-              <div className='flex gap-5 items-center mb-2'>
+            <div className='bg-white p-6 rounded-xl border-2 border-border' key={project.id}>
+              <div className='flex justify-between items-center mb-2'>
                 <h1 className='text-2xl font-semibold'>{project.title}</h1>
                 <StatusBadge status={project.status} />
               </div>
@@ -161,7 +161,7 @@ const AppliedProjects = () => {
                   </span>
                 ))}
               </div>
-              <p className='text-text-secondary mb-3'>Applied on {new Date(project.appliedDate).toLocaleDateString()}</p>
+              <p className='text-secondary font-semibold text-sm mb-3'>Applied on {new Date(project.appliedDate).toLocaleDateString()}</p>
               <hr className='border-border mb-4' />
               <div className='flex items-center gap-5'>
                 <button
