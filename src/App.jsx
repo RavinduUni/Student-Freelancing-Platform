@@ -21,6 +21,7 @@ import NDAManagement from './pages/OwnerDashboard/NDAManagement'
 import AllApplicant from './pages/OwnerDashboard/AllApplicant'
 import Payments from './pages/OwnerDashboard/Payments'
 import OwnerSettings from './pages/OwnerDashboard/OwnerSettings'
+import ProjectApplicants from './pages/OwnerDashboard/ProjectApplicants'
 
 const App = () => {
 
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="create-project" element={<CreateProject />} />
           <Route path="owner-nda" element={<NDAManagement />} />
           <Route path="all-applicants" element={<AllApplicant />} />
+          <Route path="all-applicants/:projectId" element={<ProjectApplicants />} />
           <Route path="payments" element={<Payments />} />
           <Route path="owner-settings" element={<OwnerSettings />} />
 

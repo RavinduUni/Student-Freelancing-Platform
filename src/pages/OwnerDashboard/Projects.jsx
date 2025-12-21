@@ -141,7 +141,7 @@ const Projects = () => {
 
             <hr className='border-border' />
 
-            <div className='flex items-center gap-3 mt-3'>
+            <div className='flex items-center gap-3 mt-3 text-sm'>
               <button className='flex items-center gap-2 border-2 border-primary px-3 py-2 rounded-2xl cursor-pointer text-primary hover:bg-primary hover:text-white transition-colors duration-300'>
                 <Eye className='w-5 h-5' />
                 View

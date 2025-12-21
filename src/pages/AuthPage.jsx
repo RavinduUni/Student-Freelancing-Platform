@@ -44,7 +44,9 @@ const AuthPage = () => {
                 <div className='bg-white w-lg max-w-lg p-5 rounded-xl shadow'>
                     <div className='flex flex-col items-center gap-2'>
                         <img src={assets.logo} alt="Insider Jobs" className='cursor-pointer' />
-                        <h2 className='text-4xl font-bold mt-2'>Create Account</h2>
+                        <h2 className="text-4xl font-bold mt-2">
+                            {mode === 'login' ? 'Login' : 'Create Account'}
+                        </h2>
                         <p className='text-text-secondary'>{titles[type][mode]}</p>
                     </div>
 
@@ -99,7 +101,7 @@ const AuthPage = () => {
                                     <input
                                         className='w-full pl-10 py-3 mt-2 border border-border rounded-xl focus:outline-none focus:ring focus:ring-primary focus:border-transparent'
                                         type="text"
-                                        placeholder='Your university'
+                                        placeholder='Your Company'
                                     />
                                 </div>
                             </div>
@@ -130,73 +132,88 @@ const AuthPage = () => {
                         </div>
 
                         <div>
-                            <label>{type === 'student' && mode === 'register' ? 'Upload Resume' : 'Company logo'}</label>
-                            {!file ? (
-                                <div
-                                    onClick={() => inputRef.current?.click()}
-                                    className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
-                                >
-                                    <Upload className="w-12 h-12 mx-auto mb-3 text-text-secondary" />
-                                    <p className="text-secondary mb-1">
-                                        Click to upload or drag and drop
-                                    </p>
-                                    {
-                                        type === 'student' && mode === 'register'
-                                            ? (
-                                                <>
-                                                    <p className="text-text-secondary">
-                                                        .pdf,.docx (max 10MB)
-                                                    </p>
-                                                    <input
-                                                        ref={inputRef}
-                                                        type="file"
-                                                        accept='.pdf,.docx'
-                                                        className="hidden"
-                                                        onChange={(e) => setFile(e.target.files[0])}
-                                                    />
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <p className="text-text-secondary">
-                                                        .png,.jpg,.jpeg (max 10MB)
-                                                    </p>
-                                                    <input
-                                                        ref={inputRef}
-                                                        type="file"
-                                                        accept='.png,.jpg,.jpeg'
-                                                        className="hidden"
-                                                        onChange={(e) => setFile(e.target.files[0])}
-                                                    />
-                                                </>
-                                            )
-                                    }
-                                </div>
-                            ) : (
-                                <div className="border border-border rounded-lg p-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                                            <FileText className="w-5 h-5 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-secondary">{file.name}</p>
-                                            <p className="text-text-secondary">
-                                                {(file.size / 1024).toFixed(2)} KB
+                            {mode === 'register' && (
+                                <>
+                                    <label>{type === 'student' && mode === 'register' ? 'Upload Resume' : 'Company logo'}</label>
+                                    {!file ? (
+                                        <div
+                                            onClick={() => inputRef.current?.click()}
+                                            className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                                        >
+                                            <Upload className="w-12 h-12 mx-auto mb-3 text-text-secondary" />
+                                            <p className="text-secondary mb-1">
+                                                Click to upload or drag and drop
                                             </p>
+                                            {
+                                                type === 'student' && mode === 'register'
+                                                    ? (
+                                                        <>
+                                                            <p className="text-text-secondary">
+                                                                .pdf,.docx (max 10MB)
+                                                            </p>
+                                                            <input
+                                                                ref={inputRef}
+                                                                type="file"
+                                                                accept='.pdf,.docx'
+                                                                className="hidden"
+                                                                onChange={(e) => setFile(e.target.files[0])}
+                                                            />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <p className="text-text-secondary">
+                                                                .png,.jpg,.jpeg (max 10MB)
+                                                            </p>
+                                                            <input
+                                                                ref={inputRef}
+                                                                type="file"
+                                                                accept='.png,.jpg,.jpeg'
+                                                                className="hidden"
+                                                                onChange={(e) => setFile(e.target.files[0])}
+                                                            />
+                                                        </>
+                                                    )
+                                            }
                                         </div>
-                                    </div>
-                                    <button onClick={() => setFile('')} className="text-error hover:bg-red-50 p-2 rounded-lg transition-colors" >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
+                                    ) : (
+                                        <div className="border border-border rounded-lg p-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                                                    <FileText className="w-5 h-5 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-secondary">{file.name}</p>
+                                                    <p className="text-text-secondary">
+                                                        {(file.size / 1024).toFixed(2)} KB
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button onClick={() => setFile('')} className="text-error hover:bg-red-50 p-2 rounded-lg transition-colors" >
+                                                <X className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
                             )}
 
                         </div>
 
-                        <button className='bg-primary text-white py-3 rounded-xl mt-2'>Create Account</button>
+                        <button className='bg-primary text-white py-3 rounded-xl mt-2'>{mode === 'register' ? 'Create Account' : 'Login'}</button>
 
                         <div className='flex items-center justify-center gap-2'>
-                            <p className='text-text-secondary'>{type === 'register' ? 'Already have an account?' : "Dont have an account?"} </p>
-                            <button className='text-primary'>{type === 'register' ? 'Login' : "Register"}</button>
+                            <p className='text-text-secondary'>{mode === 'register' ? 'Already have an account?' : "Dont have an account?"} </p>
+                            <button
+                                type="button"
+                                className="text-primary cursor-pointer"
+                                onClick={() =>
+                                    navigate(
+                                        `/auth?type=${type}&mode=${mode === 'register' ? 'login' : 'register'}`
+                                    )
+                                }
+                            >
+                                {mode === 'register' ? 'Login' : 'Register'}
+                            </button>
+
                         </div>
                     </form>
                 </div>
