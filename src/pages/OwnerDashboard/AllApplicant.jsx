@@ -7,8 +7,10 @@ const AllApplicant = () => {
 
   const navigate = useNavigate();
 
-  const [showNDAModel, setShowNDAModel] = useState(true);
+  const [showNDAModel, setShowNDAModel] = useState(false);
+  const [showAssignProjectModel, setShowAssignProjectModel] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const projects = [
     {
@@ -259,6 +261,7 @@ const AllApplicant = () => {
                   </div>
                 </div>
                 <button
+                  type='button'
                   className='text-primary border-2 border-primary py-1 px-3 rounded-xl hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'
                   onClick={() => navigate(`${project.id}`)}
                 >
@@ -300,19 +303,25 @@ const AllApplicant = () => {
                     </div>
 
                     <div className='flex items-center gap-2 mt-3'>
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl'>
+                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'>
                         <Eye className='w-4 h-4' />
                         View Details
                       </button>
 
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl'
+                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
                         onClick={() => { setSelectedApplicant(applicant); setShowNDAModel(true); }}
                       >
                         <Eye className='w-4 h-4' />
                         View NDA
                       </button>
 
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl'>
+                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+                        onClick={() => {
+                          setSelectedApplicant(applicant);
+                          setSelectedProject(project);
+                          setShowAssignProjectModel(true)
+                        }}
+                      >
                         <Eye className='w-4 h-4' />
                         Assign Project
                       </button>
@@ -354,7 +363,7 @@ const AllApplicant = () => {
                   <p className='text-text-secondary'>PDF • 1.2 MB</p>
                 </div>
               </div>
-              <button 
+              <button
                 className='border-2 border-primary text-primary py-2 px-4 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-all duration-300'
               >
                 Download
@@ -380,6 +389,62 @@ const AllApplicant = () => {
               <button className='flex items-center justify-center gap-2 border-2 border-primary bg-primary text-white py-2 rounded-xl hover:bg-blue-600 cursor-pointer'>
                 <UserCheck />
                 Assign Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAssignProjectModel && selectedApplicant && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center'>
+          <div className='absolute inset-0 bg-black opacity-70' />
+          <div className='min-w-4xl bg-white z-50 p-5 rounded-2xl'>
+            <div className='flex items-center justify-between'>
+              <h2 className='text-3xl font-semibold'>Assign project</h2>
+              <X className='cursor-pointer hover:text-red-400' onClick={() => setShowAssignProjectModel(false)} />
+            </div>
+
+            <hr className='border border-border my-3' />
+
+            <div className='bg-blue-50 border border-primary p-5 rounded-2xl'>
+              <h4 className='font-semibold text-lg mb-2'>Assigning project to : </h4>
+              <div className='flex items-center gap-3'>
+                <div className='w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center'>AJ</div>
+                <div>
+                  <p>{selectedApplicant.name}</p>
+                  <p className='text-text-secondary'>{selectedApplicant.university}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className='bg-green-50 p-5 rounded-2xl my-5'>
+              <div className='flex items-center gap-3'>
+                <CheckCircle className='text-accent' />
+                <p className='text-lg font-semibold'>NDA Status : Accepted</p>
+              </div>
+              <p className='text-text-secondary'>The student has reviewed and accepted the NDA agreement.</p>
+            </div>
+
+            <div className='border border-border p-5 rounded-2xl'>
+              <p className='text-lg font-semibold mb-2'>Project Details</p>
+              <p className='font-semibold'>Project: <span className='text-text-secondary font-medium'>{selectedProject.title}</span> </p>
+              <p className='font-semibold my-2'>Budget: <span className='text-text-secondary font-medium'>${selectedProject.budget}</span> </p>
+              <p className='font-semibold'>Deadline: <span className='text-text-secondary font-medium'>{selectedProject.deadline}</span> </p>
+            </div>
+
+            <div className='bg-yellow-50 border border-yellow-400 p-5 rounded-2xl my-5'>
+              <p className='text-text-secondary'>Once assigned, the student will be notified and can start working on the project. Other applicants will be automatically rejected.</p>
+            </div>
+
+            <div className='flex items-center gap-3'>
+              <button className='flex-1 flex items-center justify-center border-2 border-primary py-2 rounded-xl text-primary hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'
+                onClick={() => setShowAssignProjectModel(false)}
+              >
+                Cancel
+              </button>
+              <button className='flex flex-1 items-center justify-center gap-3 border-2 border-primary py-2 rounded-xl text-white bg-primary hover:bg-blue-600 cursor-pointer'>
+                <UserCheck />
+                Confirm Assignment
               </button>
             </div>
           </div>

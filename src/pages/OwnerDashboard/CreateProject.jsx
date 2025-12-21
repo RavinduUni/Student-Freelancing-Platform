@@ -32,6 +32,7 @@ const CreateProject = () => {
     deliverables: []
   });
 
+  const [techInput, setTechInput] = useState('');
 
   const [currentRequirement, setCurrentRequirement] = useState('');
   const [currentDeliverable, setCurrentDeliverable] = useState('');
@@ -159,10 +160,10 @@ const CreateProject = () => {
                 type="text"
                 placeholder="React, TypeScript, Tailwind CSS"
                 className='w-full px-8 py-3 border-2 border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-                value={formData.technologies.join(', ')}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const techArray = value
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                onBlur={() => {
+                  const techArray = techInput
                     .split(',')
                     .map(t => t.trim())
                     .filter(Boolean);
@@ -170,7 +171,7 @@ const CreateProject = () => {
                   setFormData(prev => ({
                     ...prev,
                     technologies: techArray
-                  }))
+                  }));
                 }}
                 required
               />
@@ -192,9 +193,12 @@ const CreateProject = () => {
                         return prev;
                       }
 
+                      const updated = [...prev.technologies, tech];
+                      setTechInput(updated.join(', '));
+
                       return {
                         ...prev,
-                        technologies: [...prev.technologies, tech]
+                        technologies: updated
                       }
                     })
                   }}
