@@ -18,7 +18,7 @@ const StatusBadge = ({ status }) => {
     const { color, label } = variants[status] || variants['pending'];
 
     return (
-        <span className={`px-3 py-1 rounded-full inline-flex items-center gap-1.5 ${color}`}>
+        <span className={`px-3 py-1 rounded-full inline-flex items-center gap-1.5 text-sm ${color}`}>
             <span className="w-2 h-2 rounded-full bg-current"></span>
             {label}
         </span>

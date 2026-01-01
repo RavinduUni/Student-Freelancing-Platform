@@ -1,5 +1,5 @@
-import { CheckCircle, Eye, FileText, Star, UserCheck, X } from 'lucide-react';
-import React, { useState } from 'react'
+import { CheckCircle, Clock, Eye, File, FileText, Send, Star, UploadIcon, UserCheck, X } from 'lucide-react';
+import React, { useRef, useState } from 'react'
 import StatusBadge from '../../components/StatusBadge';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,8 @@ const AllApplicant = () => {
 
   const [showNDAModel, setShowNDAModel] = useState(false);
   const [showAssignProjectModel, setShowAssignProjectModel] = useState(false);
+  const [showSendNDAModel, setShowSendNDAModel] = useState(false);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -237,6 +239,33 @@ const AllApplicant = () => {
   };
 
 
+  const [file, setFile] = useState(null);
+  const inputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      alert("File too large");
+      return;
+    }
+    setFile(selectedFile);
+  }
+
+  const handleRemove = () => {
+    setFile(null);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  }
+
+  const closeAllModals = () => {
+    setShowNDAModel(false);
+    setShowAssignProjectModel(false);
+    setShowSendNDAModel(false);
+  };
+
 
   return (
     <div>
@@ -308,15 +337,29 @@ const AllApplicant = () => {
                         View Details
                       </button>
 
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
-                        onClick={() => { setSelectedApplicant(applicant); setShowNDAModel(true); }}
-                      >
-                        <Eye className='w-4 h-4' />
-                        View NDA
-                      </button>
+                      {applicant.ndaStatus === 'pending' ? (
+                        <button className='flex items-center gap-1 border-2 border-yellow-400 text-yellow-500 py-1 px-2 rounded-xl cursor-pointer'>
+                          <Clock className='w-4 h-4' />
+                          NDA Pending
+                        </button>
+                      ) : (
+                        <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+                          onClick={() => { closeAllModals(); setSelectedApplicant(applicant); setShowSendNDAModel(true); }}
+                        >
+                          <Send className='w-4 h-4' />
+                          Send NDA
+                        </button>
+                      )}
 
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+                      <button
+                        disabled={applicant.ndaStatus !== 'nda-accepted'}
+                        className={`flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl
+                          ${applicant.ndaStatus !== 'nda-accepted'
+                            ? 'opacity-50 cursor-not-allowed'
+                            : 'text-primary hover:bg-primary hover:text-white'}
+  `}
                         onClick={() => {
+                          closeAllModals();
                           setSelectedApplicant(applicant);
                           setSelectedProject(project);
                           setShowAssignProjectModel(true)
@@ -349,7 +392,7 @@ const AllApplicant = () => {
               <CheckCircle className='text-green-400' />
               <div>
                 <h2 className='font-semibold text-xl'>NDA Accepted</h2>
-                <p className='text-text-secondary'>NDA accepted {timeAgo(selectedApplicant.appliedDate)}</p>
+                <p className='text-text-secondary'>NDA accepted {timeAgo(selectedApplicant.ndaAcceptedDate)}</p>
               </div>
             </div>
 
@@ -450,6 +493,85 @@ const AllApplicant = () => {
           </div>
         </div>
       )}
+
+      {showSendNDAModel && selectedApplicant && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center'>
+          <div className='absolute inset-0 bg-black opacity-70 transition-opacity duration-300' />
+          <div className='min-w-3xl bg-white z-50 p-5 rounded-2xl'>
+            <div className='flex items-center justify-between'>
+              <h2 className='text-2xl font-semibold'>Send NDA</h2>
+              <X onClick={() => setShowSendNDAModel(false)} className='hover:text-error cursor-pointer' />
+            </div>
+
+            <hr className='border border-border my-3 ' />
+
+            <div className='bg-blue-50 border border-primary p-3 rounded-2xl'>
+              <p className='text-text-secondary'>Sending NDA to:</p>
+              <p className='font-semibold text-xl'>{selectedApplicant.name}</p>
+              <p>{selectedApplicant.university}</p>
+            </div>
+
+            <div className='my-7'>
+              <p className='mb-3 text-secondary ml-1'>Upload NDA Document</p>
+
+              {!file ? (
+                <div
+                  onClick={() => inputRef.current?.click()}
+                  className='flex flex-col gap-2 justify-center items-center border-2 border-dashed border-border rounded-xl px-3 py-5 hover:border-primary transition-colors duration-300 cursor-pointer'>
+                  <UploadIcon className='w-8 h-8 text-text-secondary' />
+                  <p className='text-secondary'>Click to upload or drag and drop</p>
+                  <p className='text-text-secondary'>.pdf (max 5MB)</p>
+                  <input
+                    type="file"
+                    ref={inputRef}
+                    accept='.pdf'
+                    onChange={handleFileChange}
+                    className='hidden'
+                  />
+                </div>
+              ) : (
+                <div className='border border-border rounded-lg p-4 flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <div className='w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center'>
+                      <File className='w-5 h-5 text-primary' />
+                    </div>
+                    <div>
+                      <p className='text-secondary'>{file.name}</p>
+                      <p className='text-text-secondary'>{(file.size / 1024 / 1024).toFixed(2)}MB</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleRemove}
+                    className='text-error cursor-pointer hover:bg-red-50 p-2 rounded-lg transition-colors'
+                  >
+                    <X className='w-5 h-5' />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className='bg-yellow-50 border border-yellow-400 p-4 rounded-xl'>
+              <p className='text-text-secondary'>The applicant will need to review and accept the NDA before proceeding with the project.</p>
+            </div>
+
+            <div className='flex items-center gap-3 mt-4'>
+              <button
+                onClick={() => setShowSendNDAModel(false)}
+                className='flex-1 border-2 border-primary py-2 rounded-xl text-primary hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'>
+                Cancel
+              </button>
+
+              <button
+                className='flex-1 flex items-center justify-center gap-3 border-2 border-primary bg-primary text-white py-2 rounded-xl hover:bg-blue-600 transition-colors duration-300 cursor-pointer'>
+                <Send className='w-5 h-5' />
+                Send NDA
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

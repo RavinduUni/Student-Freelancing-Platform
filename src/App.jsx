@@ -22,6 +22,7 @@ import AllApplicant from './pages/OwnerDashboard/AllApplicant'
 import Payments from './pages/OwnerDashboard/Payments'
 import OwnerSettings from './pages/OwnerDashboard/OwnerSettings'
 import ProjectApplicants from './pages/OwnerDashboard/ProjectApplicants'
+import ReviewSubmission from './pages/OwnerDashboard/ReviewSubmission'
 
 const App = () => {
 
@@ -39,7 +40,7 @@ const App = () => {
         <Route path='/' element={<Home />} />
         <Route path='/auth' element={<AuthPage />} />
         <Route path='/apply-project/:id' element={<ProjectDetail />} />
-        
+
         <Route path="/student-dashboard" element={<StudentDashBoard />}>
 
           <Route index element={<DashBoard />} />
@@ -59,11 +60,13 @@ const App = () => {
 
           <Route path="projects" element={<Projects />} />
           <Route path="create-project" element={<CreateProject />} />
+          <Route path="create-project/:projectId" element={<CreateProject />} />
           <Route path="owner-nda" element={<NDAManagement />} />
           <Route path="all-applicants" element={<AllApplicant />} />
           <Route path="all-applicants/:projectId" element={<ProjectApplicants />} />
           <Route path="payments" element={<Payments />} />
           <Route path="owner-settings" element={<OwnerSettings />} />
+          <Route path="review-submission/:studentId" element={<ReviewSubmission />} />
 
         </Route>
 

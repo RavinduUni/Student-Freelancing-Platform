@@ -3,7 +3,6 @@ import { assets } from '../assets/assets'
 import { ArrowRight, Brain, Briefcase, BriefcaseBusiness, ChevronRight, Code, DollarSign, Palette, Search, Smartphone, Star, TrendingUp, Users } from 'lucide-react'
 import ProjectCard from './ProjectCard';
 import { useNavigate } from 'react-router-dom';
-import heroImg1 from '../assets/heroImg1.jpg';
 import heroImg2 from '../assets/heroImg2.jpg';
 import gsap from 'gsap';
 import TestimonialCard from './TestimonialCard';
@@ -11,13 +10,6 @@ import TestimonialCard from './TestimonialCard';
 const Hero = () => {
 
     const navigate = useNavigate();
-
-    const stats = [
-        { icon: Users, value: '10,000+', label: 'Active Students' },
-        { icon: Briefcase, value: '5,000+', label: 'Projects Posted' },
-        { icon: DollarSign, value: '$2M+', label: 'Paid to Students' },
-        { icon: Star, value: '4.9/5', label: 'Average Rating' }
-    ];
 
     const steps = [
         { title: 'Create Profile', description: 'Sign up as a student or project owner' },
@@ -273,34 +265,59 @@ const Hero = () => {
 
     return (
         <div className='container px-20 my-10 mx-auto'>
-            <div data-aos="fade-up" className='relative text-white p-20 flex flex-col items-center justify-center min-h-[90vh] rounded-2xl mb-10 text-center bg-cover bg-bottom-left' style={{ backgroundImage: `url(${heroImg1})` }}>
-                <div className='absolute rounded-2xl inset-0 bg-linear-to-r from-blue-900 via-primary  to-transparent' />
-                <div className='relative z-10'>
-                    <h2 className='text-5xl/13 mb-4 font-semibold'>Connect Students With,  <br /> <span className='bg-clip-text bg-linear-to-t  from-blue-600 to-blue-100 '>Real-World Projects</span></h2>
-                    <p className='text-md font-light mb-8'>The premier platform matching university students with paid freelance micro-projects.<br /> Build your portfolio, earn money, and gain real-world experience.</p>
-
-                    <div className='bg-white rounded-2xl px-3 py-2 text-black flex justify-between items-center w-full max-w-2xl mx-auto'>
-                        <div className='flex items-center'>
-                            <Search className='inline-block mr-2 opacity-35' />
-                            <input type="text" placeholder='Search For Project' className='bg-transparent border-gray-300 focus:outline-none focus:border-blue-600' />
+            
+            <div data-aos="fade-up" className='py-3'>
+                <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-16'>
+                    {steps.map((step, index) => (
+                        <div key={index} className='bg-white p-6 rounded-lg text-center'>
+                            <div className='text-white bg-primary rounded-full w-12 h-12 flex justify-center items-center  font-bold mb-4 mx-auto'>{index + 1}</div>
+                            <h3 className='text-2xl font-semibold mb-2'>{step.title}</h3>
+                            <p className='text-gray-600'>{step.description}</p>
                         </div>
-                        <div className='ml-4 flex items-center'>
-                            <BriefcaseBusiness className='inline-block mr-2 opacity-35' />
-                            <input type="text" placeholder='Skill' className='bg-transparent border-gray-300 focus:outline-none focus:border-blue-600' />
-                        </div>
-                        <button className='bg-blue-600 text-white px-6 py-3 rounded-2xl font-medium'>Search</button>
-                    </div>
+                    ))}
+                </div>
+            </div>
 
+            <div data-aos="fade-up" className='py-20 px-4 mt-30 bg-background rounded-xl'>
+                <div className='flex justify-between px-2'>
                     <div>
-                        <div className='grid grid-cols-1 md:grid-cols-4 gap-10 mt-9'>
-                            {stats.map((stat, index) => (
-                                <div key={index} className=' rounded-lg text-center'>
-                                    <stat.icon className='text-white mx-auto mb-4' size={40} />
-                                    <h3 className='text-2xl text-black font-semibold mb-2'>{stat.value}</h3>
-                                    <p className='text-white'>{stat.label}</p>
+                        <h2 className='font-semibold text-4xl'>Latest Projects</h2>
+                        <p className='text-text-secondary mt-3'>Fresh opportunities posted by verified project owners</p>
+                    </div>
+                    <button
+                        className='group flex text-primary gap-2 items-center border-2 text-center my-auto px-5 py-3 rounded-xl border-primary hover:bg-primary hover:text-white transition-all duration-500'>
+                        View All
+                        <ArrowRight className='text-primary hover:text-white group-hover:text-white transition-all duration-500' />
+                    </button>
+                </div>
+
+                <div className='grid grid-cols-3 gap-10 mt-15'>
+                    {latestProjects.map((project, id) => (
+                        <ProjectCard key={id} project={project} />
+                    ))}
+                </div>
+            </div>
+
+             <div data-aos="fade-up" className='mt-20'>
+                <div className='text-center'>
+                    <h3 className='text-4xl font-semibold'>Browse by Category</h3>
+                    <p className='text-text-secondary'>Find projects in your area of expertise</p>
+                </div>
+                <div className='mt-10'>
+                    <div className='grid grid-cols-3 gap-10 mt-6'>
+                        {categories.map((category, index) => (
+                            <div key={index} className='border-2 border-border p-6 shadow rounded-2xl hover:border-primary hover:shadow-lg transition-all duration-300'>
+                                <div className='flex items-center justify-between'>
+                                    <div className={`p-5 rounded-xl mr-4 ${category.color} `}>
+                                        <category.icon size={30} />
+                                    </div>
+                                    <ChevronRight className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
                                 </div>
-                            ))}
-                        </div>
+                                <h2 className='font-semibold text-2xl mt-2'>{category.name}</h2>
+                                <p className="text-text-secondary mt-2">{category.count} projects available</p>
+
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -336,63 +353,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div data-aos="fade-up" className='py-10'>
-                <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mt-16'>
-                    {steps.map((step, index) => (
-                        <div key={index} className='bg-white p-6 rounded-lg text-center'>
-                            <div className='text-white bg-primary rounded-full w-12 h-12 flex justify-center items-center  font-bold mb-4 mx-auto'>{index + 1}</div>
-                            <h3 className='text-2xl font-semibold mb-2'>{step.title}</h3>
-                            <p className='text-gray-600'>{step.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <div data-aos="fade-up" className='mt-20'>
-                <div className='text-center'>
-                    <h3 className='text-4xl font-semibold'>Browse by Category</h3>
-                    <p className='text-text-secondary'>Find projects in your area of expertise</p>
-                </div>
-                <div className='mt-10'>
-                    <div className='grid grid-cols-3 gap-10 mt-6'>
-                        {categories.map((category, index) => (
-                            <div key={index} className='border-2 border-border p-6 rounded-2xl hover:border-primary hover:shadow-lg transition-all duration-300'>
-                                <div className='flex items-center justify-between'>
-                                    <div className={`p-5 rounded-xl mr-4 ${category.color} `}>
-                                        <category.icon size={30} />
-                                    </div>
-                                    <ChevronRight className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
-                                </div>
-                                <h2 className='font-semibold text-2xl mt-2'>{category.name}</h2>
-                                <p className="text-text-secondary mt-2">{category.count} projects available</p>
-
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <div data-aos="fade-up" className='py-20 px-4 mt-30 bg-background rounded-xl'>
-                <div className='flex justify-between px-2'>
-                    <div>
-                        <h2 className='font-semibold text-4xl'>Latest Projects</h2>
-                        <p className='text-text-secondary mt-3'>Fresh opportunities posted by verified project owners</p>
-                    </div>
-                    <button
-                        className='group flex text-primary gap-2 items-center border-2 text-center my-auto px-5 py-3 rounded-xl border-primary hover:bg-primary hover:text-white transition-all duration-500'>
-                        View All
-                        <ArrowRight className='text-primary hover:text-white group-hover:text-white transition-all duration-500' />
-                    </button>
-                </div>
-
-                <div className='grid grid-cols-3 gap-10 mt-15'>
-                    {latestProjects.map((project, id) => (
-                        <ProjectCard key={id} project={project} />
-                    ))}
-                </div>
-            </div>
-
-
+            
             <div data-aos="fade-up" className='mt-20 overflow-hidden'>
                 <h1 className='text-center my-20 text-4xl font-semibold'>What Our Users Say</h1>
                 <div className="overflow-hidden py-2">
