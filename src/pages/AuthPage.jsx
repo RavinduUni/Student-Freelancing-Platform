@@ -41,7 +41,7 @@ const AuthPage = () => {
                     Back to Home
                 </button>
 
-                <div className='bg-white w-lg max-w-lg p-5 rounded-xl shadow'>
+                <div className='bg-white w-lg max-w-lg p-5 rounded-xl shadow-xl'>
                     <div className='flex flex-col items-center gap-2'>
                         <img src={assets.logo} alt="Insider Jobs" className='cursor-pointer' />
                         <h2 className="text-4xl font-bold mt-2">

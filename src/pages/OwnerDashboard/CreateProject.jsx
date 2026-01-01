@@ -1,7 +1,13 @@
 import { Calendar, DollarSign, Plus, Tag, X } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom';
 
 const CreateProject = () => {
+
+  const { projectId } = useParams();
+
+  const isEditMode = !!projectId;
+
 
   const categories = [
     'Frontend Development',
@@ -68,6 +74,37 @@ const CreateProject = () => {
       deliverables: prev.deliverables.filter((_, index) => index !== indexToRemove)
     }))
   }
+
+  useEffect(() => {
+
+    async function loadProject() {
+      const mockProject = {
+        title: 'React Dashboard Development',
+        description: 'Build a modern admin dashboard using React and Tailwind CSS.',
+        budget: '750',
+        deadline: '2025-10-15',
+        technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+        category: 'Frontend Development',
+        requirements: [
+          'Strong React fundamentals',
+          'Experience with REST APIs'
+        ],
+        deliverables: [
+          'Fully responsive dashboard',
+          'Clean, reusable components'
+        ]
+      };
+
+      setFormData(mockProject);
+      setTechInput(mockProject.technologies.join(', '))
+    }
+
+    if (isEditMode) {
+      loadProject();
+    }
+
+
+  }, [projectId, isEditMode])
 
 
   return (

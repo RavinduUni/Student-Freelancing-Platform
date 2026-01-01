@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import StatusBadge from '../../components/StatusBadge';
-import { Briefcase, Clock, Delete, DollarSign, Edit, Eye, Trash2, Users, UsersIcon } from 'lucide-react';
+import { Briefcase, CheckCircle, Clock, Delete, DollarSign, Edit, Eye, Trash2, Users, UsersIcon } from 'lucide-react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const Projects = () => {
+  const navigate = useNavigate();
 
   const [projectFilter, setProjectFilter] = useState('all');
 
@@ -72,6 +74,30 @@ const Projects = () => {
       deadline: '2024-11-20',
       createdDate: '2024-10-15',
       assignedTo: 'Sarah Chen'
+    },
+    {
+      id: 7,
+      title: 'Node.js API Development',
+      category: 'Web Development',
+      budget: 950,
+      applicants: 4,
+      status: 'submitted',
+      deadline: '2024-12-28',
+      createdDate: '2024-10-20',
+      assignedTo: 'Mike Wilson',
+      submittedDate: '2024-12-27'
+    },
+    {
+      id: 8,
+      title: 'Database Optimization Project',
+      category: 'Data Analysis',
+      budget: 700,
+      applicants: 2,
+      status: 'submitted',
+      deadline: '2024-12-30',
+      createdDate: '2024-10-25',
+      assignedTo: 'Emily Davis',
+      submittedDate: '2024-12-26'
     }
   ];
 
@@ -80,10 +106,11 @@ const Projects = () => {
     { value: 'open', label: 'Open', count: projects.filter(p => p.status === 'open').length },
     { value: 'applied', label: 'Has Applicants', count: projects.filter(p => p.status === 'applied').length },
     { value: 'in-progress', label: 'In Progress', count: projects.filter(p => p.status === 'in-progress').length },
+    { value: 'submitted', label: 'Submitted', count: projects.filter(p => p.status === 'submitted').length },
     { value: 'completed', label: 'Completed', count: projects.filter(p => p.status === 'completed').length }
   ];
 
-  const filteredProjects =  (
+  const filteredProjects = (
     projectFilter === 'all' ? projects : projects.filter((p) => p.status === projectFilter)
   )
 
@@ -147,15 +174,27 @@ const Projects = () => {
                 View
               </button>
 
-              <button className='flex items-center gap-2 border-2 border-primary px-3 py-2 rounded-2xl cursor-pointer text-primary hover:bg-primary hover:text-white transition-colors duration-300'>
-                <Users className='w-5 h-5' />
-                View Applicants ({project.applicants})
-              </button>
+              {project.status !== 'submitted' ? (
+                <>
+                  <button className='flex items-center gap-2 border-2 border-primary px-3 py-2 rounded-2xl cursor-pointer text-primary hover:bg-primary hover:text-white transition-colors duration-300'>
+                    <Users className='w-5 h-5' />
+                    View Applicants ({project.applicants})
+                  </button>
 
-              <button className='flex items-center gap-2 border-2 border-primary px-3 py-2 rounded-2xl cursor-pointer text-primary hover:bg-primary hover:text-white transition-colors duration-300'>
-                <Edit className='w-5 h-5' />
-                Edit
-              </button>
+                  <button className='flex items-center gap-2 border-2 border-primary px-3 py-2 rounded-2xl cursor-pointer text-primary hover:bg-primary hover:text-white transition-colors duration-300'>
+                    <Edit className='w-5 h-5' />
+                    Edit
+                  </button>
+                </>
+              ) : (
+                <button 
+                  onClick={() => navigate(`/owner-dashboard/review-submission/${project.assignedTo}`)}
+                  className='flex items-center gap-2 border-2 border-primary px-3 py-2 rounded-2xl cursor-pointer bg-primary text-white hover:bg-blue-600 transition-colors duration-300'
+                >
+                  <CheckCircle className='w-5 h-5' />
+                  Review Work
+                </button>
+              )}
 
               <button className='flex items-center gap-2 border-2 border-red-400 px-3 py-2 rounded-2xl cursor-pointer text-red-400 hover:bg-red-500 hover:text-white transition-colors duration-300'>
                 <Trash2 className='w-5 h-5' />

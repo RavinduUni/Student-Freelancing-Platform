@@ -7,7 +7,7 @@ const ProjectCard = ({ project }) => {
   const navigate = useNavigate();
 
   return (
-    <div onClick={() => navigate(`/apply-project/${project.id}`)} className='bg-white shadow-sm p-5 rounded-xl hover:shadow-lg transition-all duration-300 group cursor-pointer'>
+    <div onClick={() => navigate(`/apply-project/${project.id}`)} className='bg-white shadow-lg p-5 rounded-xl hover:shadow-lg transition-all duration-300 group cursor-pointer'>
       <div className='flex items-center justify-between'>
         <h3 className='text-primary text-sm bg-blue-50 py-1 px-2 rounded-4xl'>{project.category}</h3>
         <div className='flex items-center gap-1'>
