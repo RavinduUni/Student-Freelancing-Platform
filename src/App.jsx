@@ -23,6 +23,7 @@ import Payments from './pages/OwnerDashboard/Payments'
 import OwnerSettings from './pages/OwnerDashboard/OwnerSettings'
 import ProjectApplicants from './pages/OwnerDashboard/ProjectApplicants'
 import ReviewSubmission from './pages/OwnerDashboard/ReviewSubmission'
+import ViewStudentDetails from './pages/OwnerDashboard/ViewStudentDetails'
 
 const App = () => {
 
@@ -67,7 +68,7 @@ const App = () => {
           <Route path="payments" element={<Payments />} />
           <Route path="owner-settings" element={<OwnerSettings />} />
           <Route path="review-submission/:studentId" element={<ReviewSubmission />} />
-
+          <Route path="view-details/:studentId" element={<ViewStudentDetails />} />
         </Route>
 
 

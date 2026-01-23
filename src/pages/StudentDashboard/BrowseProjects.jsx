@@ -318,7 +318,7 @@ const BrowseProjects = () => {
               <option value="budget_high">Highest Budget</option>
               <option value="budget_low">Lowest Budget</option>
             </select>
-            <SortAsc className="w-5 h-5 text-primary absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <SortAsc className="w-5 h-5 text-primary absolute right-5 top-1/2 -translate-y-1/2 left-35 pointer-events-none" />
           </div>
         </div>
       </div>

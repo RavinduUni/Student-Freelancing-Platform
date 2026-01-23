@@ -196,7 +196,7 @@ const NDAManagement = () => {
                 <p className='text-text-secondary'>{NDA.studentEmail}</p>
               </div>
               <div>
-                <StatusBadge status={"nda-sent"} />
+                <StatusBadge status={NDA.status} />
               </div>
             </div>
 
@@ -264,11 +264,11 @@ const NDAManagement = () => {
             <div className='grid grid-cols-2 gap-3 text-sm'>
               <div className='bg-blue-50 p-3 rounded-xl'>
                 <p className='text-text-secondary mb-2'>Sent Date</p>
-                <p>11/15/2024</p>
+                <p>{NDA.sentDate}</p>
               </div>
               <div className='bg-green-50 p-3 rounded-xl'>
                 <p className='text-text-secondary mb-2'>Accepted Date</p>
-                <p>11/16/2024</p>
+                <p>{NDA.acceptedDate}</p>
               </div>
             </div>
 

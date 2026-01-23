@@ -316,7 +316,7 @@ const AllApplicant = () => {
                       </div>
                     </div>
 
-                    <div className='flex items-center gap-3 text-sm mt-3'>
+                    <div className='flex items-center gap-3 text-sm mt-3 flex-wrap'>
                       {applicant.skills.map((skill) => (
                         <span className='text-primary bg-blue-50 py-1 px-3 rounded-2xl' key={skill}>{skill}</span>
                       ))}
@@ -332,7 +332,9 @@ const AllApplicant = () => {
                     </div>
 
                     <div className='flex items-center gap-2 mt-3'>
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'>
+                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+                        onClick={() => navigate(`/owner-dashboard/view-details/${applicant.id}`)}
+                      >
                         <Eye className='w-4 h-4' />
                         View Details
                       </button>
