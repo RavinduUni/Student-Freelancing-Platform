@@ -1,17 +1,118 @@
 import { ArrowLeft, CheckCircle, Download, FileText, Star, XCircle } from 'lucide-react'
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const ReviewSubmission = () => {
 
+    const { studentId } = useParams();
     const navigate = useNavigate();
+
+    const projects = [
+        {
+            id: 1,
+            title: 'React Dashboard Development',
+            category: 'Web Development',
+            budget: 800,
+            applicants: 8,
+            status: 'in-progress',
+            deadline: '2024-12-31',
+            createdDate: '2024-11-01',
+            assignedTo: 'Alex Johnson'
+        },
+        {
+            id: 2,
+            title: 'Mobile App UI Design',
+            category: 'UI/UX Design',
+            budget: 500,
+            applicants: 12,
+            status: 'nda-sent',
+            deadline: '2024-12-20',
+            createdDate: '2024-11-05',
+            assignedTo: null
+        },
+        {
+            id: 3,
+            title: 'Content Writing - Tech Blog',
+            category: 'Content Writing',
+            budget: 200,
+            applicants: 5,
+            status: 'applied',
+            deadline: '2024-12-15',
+            createdDate: '2024-11-10',
+            assignedTo: null
+        },
+        {
+            id: 4,
+            title: 'Python Data Analysis Script',
+            category: 'Data Analysis',
+            budget: 400,
+            applicants: 3,
+            status: 'open',
+            deadline: '2024-12-25',
+            createdDate: '2024-11-12',
+            assignedTo: null
+        },
+        {
+            id: 5,
+            title: 'E-commerce Website Landing Page',
+            category: 'Web Development',
+            budget: 600,
+            applicants: 0,
+            status: 'open',
+            deadline: '2025-01-10',
+            createdDate: '2024-11-15',
+            assignedTo: null
+        },
+        {
+            id: 6,
+            title: 'Social Media Marketing Campaign',
+            category: 'Marketing',
+            budget: 350,
+            applicants: 7,
+            status: 'completed',
+            deadline: '2024-11-20',
+            createdDate: '2024-10-15',
+            assignedTo: 'Sarah Chen'
+        },
+        {
+            id: 7,
+            title: 'Node.js API Development',
+            category: 'Web Development',
+            budget: 950,
+            applicants: 4,
+            status: 'submitted',
+            deadline: '2024-12-28',
+            createdDate: '2024-10-20',
+            assignedTo: 'Mike Wilson',
+            submittedDate: '2024-12-27'
+        },
+        {
+            id: 8,
+            title: 'Database Optimization Project',
+            category: 'Data Analysis',
+            budget: 700,
+            applicants: 2,
+            status: 'submitted',
+            deadline: '2024-12-30',
+            createdDate: '2024-10-25',
+            assignedTo: 'Emily Davis',
+            submittedDate: '2024-12-26'
+        }
+    ];
+
+    const projectDetails = projects.find(
+        p => p.assignedTo === studentId
+    );
+
+    console.log(projectDetails);
+    
 
     return (
         <div>
             <div className='flex justify-between'>
                 <div>
                     <h1 className='text-4xl font-bold mb-2'>Review Submission</h1>
-                    <p className='text-text-secondary'>React Dashboard Development</p>
+                    <p className='text-text-secondary'>{projectDetails.title}</p>
                 </div>
                 <div>
                     <button
@@ -31,7 +132,7 @@ const ReviewSubmission = () => {
                         <div className='flex items-center gap-2'>
                             <div className='w-16 h-16 text-white rounded-full bg-primary flex items-center justify-center'>AJ</div>
                             <div>
-                                <h4 className='text-2xl font-semibold'>Alex Johnson</h4>
+                                <h4 className='text-2xl font-semibold'>{projectDetails.assignedTo}</h4>
                                 <p className='text-sm text-text-secondary'>MIT</p>
                                 <span className='flex items-center gap-1 text-yellow-500'><Star className='w-4 h-4 fill-current' />4.9</span>
                             </div>

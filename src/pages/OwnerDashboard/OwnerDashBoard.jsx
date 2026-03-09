@@ -120,7 +120,7 @@ const OwnerDashBoard = () => {
 
 
                 {/* Right side Pannel */}
-                <div className='flex-3 min-h-screen bg-background py-6 px-4'>
+                <div className='flex-4 min-h-screen bg-background py-6 px-4'>
                     <Outlet />
                 </div>
             </div>
