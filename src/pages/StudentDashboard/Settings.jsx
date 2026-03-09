@@ -56,7 +56,7 @@ const Settings = () => {
         alert('Only JPG, PNG, or GIF files are allowed');
         return;
       }
-
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setTempProfilePhoto(reader.result);
