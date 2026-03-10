@@ -9,9 +9,9 @@ const NavBar = () => {
   return (
     <div className='border-b border-border py-4'>
       <div className='container px-20 flex justify-between items-center'>
-        <img src={assets.logo} alt="Insider Jobs" className='cursor-pointer' />
+        <img onClick={() => navigate('/')} src={assets.logo} alt="Insider Jobs" className='cursor-pointer' />
         <div className='flex gap-6 mr-100'>
-          <NavLink to="/">Jobs</NavLink>
+          <NavLink to="/projects">Projects</NavLink>
           <NavLink to="/">Companies</NavLink>
           <NavLink to="/">Pricing</NavLink>
           <NavLink to="/">About</NavLink>

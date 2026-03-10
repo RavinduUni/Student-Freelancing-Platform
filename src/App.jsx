@@ -24,6 +24,7 @@ import OwnerSettings from './pages/OwnerDashboard/OwnerSettings'
 import ProjectApplicants from './pages/OwnerDashboard/ProjectApplicants'
 import ReviewSubmission from './pages/OwnerDashboard/ReviewSubmission'
 import ViewStudentDetails from './pages/OwnerDashboard/ViewStudentDetails'
+import AllProjects from './pages/AllProjects'
 
 const App = () => {
 
@@ -41,6 +42,7 @@ const App = () => {
         <Route path='/' element={<Home />} />
         <Route path='/auth' element={<AuthPage />} />
         <Route path='/apply-project/:id' element={<ProjectDetail />} />
+        <Route path='/projects' element={<AllProjects />} />
 
         <Route path="/student-dashboard" element={<StudentDashBoard />}>
 
