@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import NavBar from '../components/NavBar';
 import ProjectCard from '../components/ProjectCard';
-import { ChevronDown, ChevronUp, Tag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Tag } from 'lucide-react';
+import HeroBanner from '../components/HeroBanner';
+import Footer from '../components/Footer';
 
 const AllProjects = () => {
     const categories = [
@@ -184,16 +186,110 @@ const AllProjects = () => {
     const [deadlineRanges, setDeadlineRanges] = useState([]);
     const [selectedSkills, setSelectedSkills] = useState([]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const handleBudgetToggle = (value) => {
+        setBudgetRanges(prev => (
+            prev.includes(value) ? prev.filter(b => b != value) : [...prev, value]
+        ));
+    };
+
+    const handleDeadlineToggle = (value) => {
+        setDeadlineRanges(prev => (
+            prev.includes(value) ? prev.filter(b => b !== value) : [...prev, value]
+        ))
+    };
+
+    const handleSelectedSkills = (value) => {
+        setSelectedSkills(prev => (
+            prev.includes(value) ? prev.filter(s => s !== value) : [...prev, value]
+        ));
+    };
+
+    const convertDeadlineToDays = (deadlineString) => {
+        if (!deadlineString) return null;
+
+        const [num, unit] = deadlineString.toLowerCase().split(" ");
+
+        const value = Number(num);
+
+        if (unit.startsWith('week')) {
+            return value * 7;
+        }
+
+        if (unit.startsWith('day')) {
+            return value;
+        }
+
+        return null;
+    }
+
     const filteredProjects = projects.filter(project => {
-        if (selectedCategory.toLowerCase() !== 'all' && project.category.toLowerCase() !== selectedCategory.toLowerCase() ) {
+        if (selectedCategory.toLowerCase() !== 'all' && project.category.toLowerCase() !== selectedCategory.toLowerCase()) {
             return false;
         }
+
+        if (budgetRanges.length > 0) {
+            const projectBudget = project.budget;
+            const inBudget = budgetRanges.some(range => {
+                const [min, max] = range.split("-").map(Number);
+                return projectBudget >= min && projectBudget <= max;
+            });
+
+            if (!inBudget) {
+                return false;
+            }
+        }
+
+        if (deadlineRanges.length > 0) {
+            const projectDeadline = convertDeadlineToDays(project.deadline);
+            const withinDeadline = deadlineRanges.some(range => {
+                const [min, max] = range.split("-").map(Number);
+                return projectDeadline >= min && projectDeadline <= max;
+            })
+
+            if (!withinDeadline) {
+                return false;
+            }
+        }
+
+        if (selectedSkills.length > 0) {
+            const hasSkill = selectedSkills.some(skill => (
+                project.skills.includes(skill)
+            ));
+
+            if (!hasSkill) {
+                return false;
+            }
+        }
+
+
         return true;
-    })
+    });
+
+    const ITEMS_PER_PAGE = 8;
+
+    const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE);
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const currentProjects = filteredProjects.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    const goNext = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(prev => prev + 1);
+        }
+    }
+
+    const goPrev = () => {
+        if (currentPage > 1) {
+            setCurrentPage(prev => prev - 1);
+        }
+    }
 
     return (
         <>
             <NavBar />
+            <HeroBanner />
             <div className="container mx-auto px-20 py-8 bg-background">
                 <div className='grid grid-cols-4 gap-5'>
                     <div className='col-span-1 bg-white shadow-lg rounded-2xl p-4'>
@@ -231,17 +327,131 @@ const AllProjects = () => {
                                 )}
                             </div>
                         </div>
+
+                        <div className='space-y-6 mt-8'>
+                            <div className='border-border border-b pb-4'>
+                                <button className='flex items-center justify-between w-full mb-3 text-secondary hover:text-primary transition-colors cursor-pointer'
+                                    onClick={() => setBudgetExpanded(!budgetExpanded)}
+                                >
+                                    <span className='flex items-center gap-2 font-semibold'>
+                                        <DollarSign className='w-4 h-4' />
+                                        Budget Range
+                                    </span>
+                                    {budgetExpanded ? <ChevronDown className='w-4 h-4' /> : <ChevronUp className='w-4 h-4' />}
+                                </button>
+                                {budgetExpanded && (
+                                    <div className='space-y-2'>
+                                        {budgetOptions.map((option) => (
+                                            <label key={option.value} className='flex items-center gap-3'>
+                                                <input
+                                                    type="checkbox"
+                                                    value={option.value}
+                                                    checked={budgetRanges.includes(option.value)}
+                                                    onChange={() => handleBudgetToggle(option.value)}
+                                                    className='w-4 h-4 text-primary border-border focus:ring-primary cursor-pointer'
+                                                />
+                                                <span className='text-text-secondary text-sm'>{option.label}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className='space-y-6 mt-8'>
+                            <div className='border-border border-b pb-4'>
+                                <button className='flex items-center justify-between w-full mb-3 text-secondary hover:text-primary transition-colors cursor-pointer'
+                                    onClick={() => setDeadlineExpanded(!deadlineExpanded)}
+                                >
+                                    <span className='flex items-center gap-2 font-semibold'>
+                                        <Clock className='w-4 h-4' />
+                                        Deadline
+                                    </span>
+                                    {deadlineExpanded ? <ChevronDown className='w-4 h-4' /> : <ChevronUp className='w-4 h-4' />}
+                                </button>
+                                {deadlineExpanded && (
+                                    <div className='space-y-2'>
+                                        {deadlineOptions.map((option) => (
+                                            <label key={option.value} className='flex items-center gap-3'>
+                                                <input
+                                                    type="checkbox"
+                                                    value={option.value}
+                                                    checked={deadlineRanges.includes(option.value)}
+                                                    onChange={() => handleDeadlineToggle(option.value)}
+                                                    className='w-4 h-4 text-primary border-border focus:ring-primary cursor-pointer'
+                                                />
+                                                <span className='text-text-secondary text-sm'>{option.label}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className='space-y-6 mt-8'>
+                            <div className='border-border pb-4'>
+                                <button className='flex items-center justify-between w-full mb-3 text-secondary hover:text-primary transition-colors cursor-pointer'
+                                    onClick={() => setDeadlineExpanded(!deadlineExpanded)}
+                                >
+                                    <span className='flex items-center gap-2 font-semibold'>
+                                        Required Skills
+                                    </span>
+                                    {skillsExpanded ? <ChevronDown className='w-4 h-4' /> : <ChevronUp className='w-4 h-4' />}
+                                </button>
+                                {skillsExpanded && (
+                                    <div className='space-y-2 max-h-80 overflow-scroll'>
+                                        {allSkills.map((skill) => (
+                                            <label key={skill} className='flex items-center gap-3'>
+                                                <input
+                                                    type="checkbox"
+                                                    value={skill}
+                                                    checked={selectedSkills.includes(skill)}
+                                                    onChange={() => handleSelectedSkills(skill)}
+                                                    className='w-4 h-4 text-primary border-border focus:ring-primary cursor-pointer'
+                                                />
+                                                <span className='text-text-secondary text-sm'>{skill}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     <div className='col-span-3'>
                         <div className='grid grid-cols-2 gap-4'>
-                            {filteredProjects.map((project) => (
+                            {currentProjects.map((project) => (
                                 <ProjectCard project={project} />
                             ))}
                         </div>
                     </div>
                 </div>
+                <div className='grid grid-cols-4'>
+                    <div className='flex items-center justify-center mt-4 gap-1 col-span-3 col-start-2'>
+                        <button
+                            onClick={goPrev}
+                            disabled={currentPage === 1}
+                            className={`border text-primary w-8 h-8 rounded flex items-center justify-center cursor-pointer ${currentPage === 1 && 'opacity-40 cursor-not-allowed'}`}>
+                            <ArrowLeft className='w-4 h-4' />
+                        </button>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <button
+                                onClick={() => setCurrentPage(page)}
+                                className={`border text-primary w-8 h-8 rounded cursor-pointer ${currentPage === page && 'bg-primary border-primary text-white'}`}>
+                                {page}
+                            </button>
+                        ))}
+                        <button
+                            onClick={goNext}
+                            disabled={currentPage === totalPages}
+                            className={`border text-primary w-8 h-8 rounded flex items-center justify-center cursor-pointer ${currentPage === totalPages && 'opacity-40 cursor-not-allowed'}`}>
+                            <ArrowRight className='w-4 h-4' />
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            <Footer />
         </>
     )
 }
