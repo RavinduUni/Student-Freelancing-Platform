@@ -1,7 +1,9 @@
 import { ArrowLeft, Briefcase, CheckCircle, Clock, DollarSign, MapPin } from 'lucide-react';
-import React from 'react'
+import React, { useState } from 'react'
 import NavBar from '../components/NavBar';
 import { useNavigate, useParams } from 'react-router-dom';
+import ApplyModal from '../components/ApplyModel';
+import ApplyModel from '../components/ApplyModel';
 
 const ProjectDetail = () => {
 
@@ -104,6 +106,8 @@ const ProjectDetail = () => {
 
     const project = projectData.find(item => item.id === Number(id));
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <>
             <NavBar />
@@ -173,7 +177,9 @@ const ProjectDetail = () => {
 
                             <div className='col-span-1 '>
                                 <div className='sticky top-34 bg-white rounded-2xl shadow p-8'>
-                                    <button className='bg-primary text-white py-4 w-full rounded-xl'>
+                                    <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        className='bg-primary text-white py-4 w-full rounded-xl'>
                                         Apply for this Project
                                     </button>
 
@@ -228,6 +234,11 @@ const ProjectDetail = () => {
                     )}
                 </div>
             </div>
+            <ApplyModel
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                projecTitle={project.title}
+            />
         </>
     )
 }
