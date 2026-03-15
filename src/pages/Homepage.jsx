@@ -156,10 +156,10 @@ export default function HomePage() {
             </nav>
 
             {/* ── HERO ── */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 min-h-[90vh] flex items-center">
+            <section className="relative overflow-hidden bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 min-h-[90vh] flex items-center">
                 {/* Grid overlay */}
                 <div className="absolute inset-0 opacity-10"
-                    style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px)', backgroundSize: '48px 48px' }} />
+                    style={{ backgroundImage: 'linear-linear(rgba(255,255,255,.15) 1px,transparent 1px),linear-linear(90deg,rgba(255,255,255,.15) 1px,transparent 1px)', backgroundSize: '48px 48px' }} />
 
                 {/* Blue glow blobs */}
                 <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -177,7 +177,7 @@ export default function HomePage() {
 
                             <h1 className="text-5xl lg:text-6xl font-extrabold leading-[1.1] text-white mb-6 tracking-tight">
                                 Connect Students With{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+                                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-cyan-400">
                                     Real-World Projects
                                 </span>
                             </h1>
@@ -212,19 +212,19 @@ export default function HomePage() {
                             {/* Main large image */}
                             <div className="absolute top-0 left-0 w-72 h-80 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                                 <img src={HERO_IMG_1} alt="Students collaborating" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 to-transparent" />
                             </div>
 
                             {/* Second image — offset right */}
                             <div className="absolute top-16 right-0 w-56 h-64 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                                 <img src={HERO_IMG_2} alt="Student on laptop" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-slate-900/50 to-transparent" />
                             </div>
 
                             {/* Third image — bottom left overlap */}
                             <div className="absolute bottom-0 left-16 w-56 h-52 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                                 <img src={WORK_IMG_1} alt="Team working" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-slate-900/50 to-transparent" />
                             </div>
 
                             {/* Floating stat card */}
@@ -289,9 +289,9 @@ export default function HomePage() {
             <section className="py-24 bg-slate-950">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div className="relative">
-                        <div className="rounded-3xl overflow-hidden aspect-[4/3]">
+                        <div className="rounded-3xl overflow-hidden aspect-4/3">
                             <img src={TRUST_IMG} alt="Team meeting" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/40 to-transparent" />
+                            <div className="absolute inset-0 bg-linear-to-tr from-blue-900/40 to-transparent" />
                         </div>
                         {/* Floating badge */}
                         <div className="absolute -bottom-5 -right-5 bg-white rounded-2xl shadow-xl px-6 py-4 flex items-center gap-3">
