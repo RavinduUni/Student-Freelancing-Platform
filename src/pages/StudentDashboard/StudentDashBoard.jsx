@@ -81,6 +81,19 @@ const StudentDashBoard = () => {
               </NavLink>
 
               <NavLink
+                to="resumebuilder"
+                className={({ isActive }) =>
+                  [
+                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
+                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
+                  ].join(" ")
+                }
+              >
+                <File className="w-5 h-5" />
+                <span>Resume Builder</span>
+              </NavLink>
+
+              <NavLink
                 to="wallet"
                 className={({ isActive }) =>
                   [

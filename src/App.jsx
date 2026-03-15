@@ -25,6 +25,7 @@ import ProjectApplicants from './pages/OwnerDashboard/ProjectApplicants'
 import ReviewSubmission from './pages/OwnerDashboard/ReviewSubmission'
 import ViewStudentDetails from './pages/OwnerDashboard/ViewStudentDetails'
 import AllProjects from './pages/AllProjects'
+import ResumeBuilder from './pages/StudentDashboard/ResumeBuilder'
 
 const App = () => {
 
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="applied-projects" element={<AppliedProjects />} />
           <Route path="nda-requests" element={<NDARequests />} />
           <Route path="submissions" element={<Submissions />} />
+          <Route path="resumebuilder" element={<ResumeBuilder />} />
           <Route path="wallet" element={<Wallet />} />
           <Route path="settings" element={<Settings />} />
 
