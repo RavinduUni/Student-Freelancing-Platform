@@ -34,7 +34,7 @@ const ProjectCard = ({ project }) => {
       <div className='flex justify-between mt-5'>
         <div className='flex items-center gap-1'>
           <DollarSign className='w-4 h-4 text-accent' />
-          <p>${project.budget}</p>
+          <p className='text-blue-600 font-semibold'>${project.budget}</p>
           <p className='text-gray-500 text-sm ml-4'>{project.deadline}</p>
         </div>
       

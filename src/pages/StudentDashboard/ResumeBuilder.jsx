@@ -1,5 +1,7 @@
-import { Briefcase, FileText, GraduationCap, Loader2, Plus, Sparkles, Trash2, User } from 'lucide-react';
+import { Award, Briefcase, Download, FileText, GraduationCap, Loader2, Mail, MapPin, Phone, Plus, Sparkles, Trash2, User, X } from 'lucide-react';
 import React, { useRef, useState } from 'react'
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from 'docx';
+import { saveAs } from 'file-saver';
 
 const uid = () => Math.random().toString(36).slice(2, 8);
 
@@ -106,41 +108,136 @@ const ResumeBuilder = () => {
     // ── print / download ──
     const previewRef = useRef(null);
 
-    const handleDownload = () => {
-        const printContents = previewRef.current.innerHTML;
-        const win = window.open('', '_blank');
-        win.document.write(`
-      <html><head><title>${personal.name || 'Resume'}</title>
-      <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: 'Georgia', serif; color: #1a1a2e; background: #fff; }
-        .resume { max-width: 800px; margin: 0 auto; padding: 40px; }
-        .header { border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 24px; }
-        .name { font-size: 2rem; font-weight: 700; color: #1a1a2e; }
-        .title { font-size: 1rem; color: #2563eb; margin-top: 4px; }
-        .contact { display:flex; gap:20px; margin-top:10px; font-size:0.8rem; color:#555; flex-wrap:wrap; }
-        .section { margin-bottom: 22px; }
-        .section-title { font-size:1rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#2563eb; border-bottom:1px solid #dbeafe; padding-bottom:4px; margin-bottom:12px; }
-        .summary { font-size:0.875rem; color:#444; line-height:1.6; }
-        .entry { margin-bottom:14px; }
-        .entry-header { display:flex; justify-content:space-between; align-items:baseline; }
-        .entry-title { font-weight:600; font-size:0.95rem; }
-        .entry-sub { color:#555; font-size:0.85rem; }
-        .entry-period { font-size:0.8rem; color:#888; }
-        .entry-desc { font-size:0.85rem; color:#444; line-height:1.6; margin-top:4px; }
-        .skills { display:flex; flex-wrap:wrap; gap:8px; }
-        .skill { background:#dbeafe; color:#1d4ed8; font-size:0.8rem; padding:3px 10px; border-radius:20px; }
-        @media print { body { -webkit-print-color-adjust: exact; } }
-      </style></head>
-      <body>${printContents}</body></html>
-    `);
-        win.document.close();
-        win.focus();
-        setTimeout(() => {
-            win.print();
-            win.close();
-        }, 500);
-    }
+    const handleDownload = async () => {
+        const doc = new Document({
+            sections: [{
+                properties: {},
+                children: [
+
+                    // ── Name ──
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: personal.name || 'Your Name',
+                                bold: true,
+                                size: 48, // 24pt
+                                color: '1a1a2e'
+                            })
+                        ]
+                    }),
+
+                    // ── Job Title ──
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: personal.title || '',
+                                size: 24,
+                                color: '2563eb'
+                            })
+                        ],
+                        spacing: { after: 100 }
+                    }),
+
+                    // ── Contact Info ──
+                    new Paragraph({
+                        children: [
+                            new TextRun({ text: personal.email, size: 18, color: '555555' }),
+                            new TextRun({ text: personal.phone ? `  |  ${personal.phone}` : '', size: 18, color: '555555' }),
+                            new TextRun({ text: personal.location ? `  |  ${personal.location}` : '', size: 18, color: '555555' }),
+                        ],
+                        border: {
+                            bottom: { style: BorderStyle.SINGLE, size: 6, color: '2563eb' }
+                        },
+                        spacing: { after: 200 }
+                    }),
+
+                    // ── Summary ──
+                    ...(personal.summary ? [
+                        new Paragraph({
+                            text: 'PROFESSIONAL SUMMARY',
+                            heading: HeadingLevel.HEADING_2,
+                            children: [new TextRun({ text: 'PROFESSIONAL SUMMARY', bold: true, color: '2563eb', size: 22 })],
+                            border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: 'dbeafe' } },
+                            spacing: { after: 100 }
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({ text: personal.summary, size: 20, color: '444444' })],
+                            spacing: { after: 200 }
+                        }),
+                    ] : []),
+
+                    // ── Experience ──
+                    ...(experiences.some(e => e.role || e.company) ? [
+                        new Paragraph({
+                            children: [new TextRun({ text: 'WORK EXPERIENCE', bold: true, color: '2563eb', size: 22 })],
+                            border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: 'dbeafe' } },
+                            spacing: { after: 120 }
+                        }),
+                        ...experiences.flatMap(exp => (exp.role || exp.company) ? [
+                            new Paragraph({
+                                children: [
+                                    new TextRun({ text: exp.role, bold: true, size: 22 }),
+                                    new TextRun({ text: exp.period ? `   ${exp.period}` : '', size: 18, color: '888888' }),
+                                ],
+                                spacing: { after: 60 }
+                            }),
+                            new Paragraph({
+                                children: [new TextRun({ text: exp.company, size: 20, color: '555555', italics: true })],
+                                spacing: { after: 60 }
+                            }),
+                            ...(exp.description ? [
+                                new Paragraph({
+                                    children: [new TextRun({ text: exp.description, size: 19, color: '444444' })],
+                                    spacing: { after: 160 }
+                                })
+                            ] : [])
+                        ] : [])
+                    ] : []),
+
+                    // ── Education ──
+                    ...(education.some(e => e.degree || e.institution) ? [
+                        new Paragraph({
+                            children: [new TextRun({ text: 'EDUCATION', bold: true, color: '2563eb', size: 22 })],
+                            border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: 'dbeafe' } },
+                            spacing: { after: 120 }
+                        }),
+                        ...education.flatMap(edu => (edu.degree || edu.institution) ? [
+                            new Paragraph({
+                                children: [
+                                    new TextRun({ text: edu.degree, bold: true, size: 22 }),
+                                    new TextRun({ text: edu.period ? `   ${edu.period}` : '', size: 18, color: '888888' }),
+                                ],
+                                spacing: { after: 60 }
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({ text: edu.institution, size: 20, color: '555555', italics: true }),
+                                    new TextRun({ text: edu.gpa ? `   GPA: ${edu.gpa}` : '', size: 19, color: '666666' }),
+                                ],
+                                spacing: { after: 160 }
+                            }),
+                        ] : [])
+                    ] : []),
+
+                    // ── Skills ──
+                    ...(skills.filter(Boolean).length > 0 ? [
+                        new Paragraph({
+                            children: [new TextRun({ text: 'SKILLS', bold: true, color: '2563eb', size: 22 })],
+                            border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: 'dbeafe' } },
+                            spacing: { after: 120 }
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({ text: skills.filter(Boolean).join('  •  '), size: 20, color: '1d4ed8' })],
+                            spacing: { after: 200 }
+                        }),
+                    ] : []),
+                ]
+            }]
+        });
+
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, `${personal.name || 'Resume'}.docx`);
+    };
 
 
     return (
@@ -271,6 +368,126 @@ const ResumeBuilder = () => {
                                 className="flex items-center gap-2 text-sm text-blue-600 border-2 border-dashed border-blue-200 rounded-xl py-2.5 justify-center hover:bg-blue-50 transition-colors cursor-pointer">
                                 <Plus className="w-4 h-4" /> Add Education
                             </button>
+                        </div>
+                    </div>
+
+                    <div className='bg-white rounded-2xl shadow p-5'>
+                        <SectionHeader icon={Award} title={'Skills'} />
+                        <div className='flex gap-2 mb-3'>
+                            <input
+                                type="text"
+                                value={skillInput}
+                                onChange={(e) => setSkillInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && addSkill()}
+                                placeholder='Type a skill and press Enter…'
+                                className='flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+                            />
+                            <button onClick={addSkill} className='bg-blue-600 text-white px-4 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer'>
+                                <Plus className='w-4 h-4' />
+                            </button>
+                        </div>
+                        <div className='flex flex-wrap gap-2'>
+                            {skills.filter(Boolean).map(skill => (
+                                <span key={skill} className='flex items-center gap-1.5 bg-blue-50 text-blue-600 px-3 py-1 rounded-xl text-sm'>
+                                    {skill}
+                                    <button onClick={() => removeSkill(skill)} className='hover:text-red-500 cursor-pointer'>
+                                        <X className='w-3.5 h-3.5' />
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right - Preview */}
+                <div className='col-span-1 sticky top-6'>
+                    <div className='bg-white rounded-2xl shadow overflow-hidden'>
+                        <div className='bg-blue-600 px-5 py-3 flex items-center justify-between'>
+                            <span className='text-white font-medium text-sm'>Live Preview</span>
+                            <button
+                                onClick={handleDownload}
+                                className='flex items-center gap-1.5 text-xs bg-white text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer font-medium'
+                            >
+                                <Download className='w-3.5 h-3.5' />Download
+                            </button>
+                        </div>
+
+                        <div ref={previewRef} className='resume p-8 text-gray-800 font-serif text-sm leading-relaxed'>
+                            <div className='header' style={{ borderBottom: '2px solid #2563eb', paddingBottom: '16px', marginBottom: '20px' }}>
+                                <h1 className='name' style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1a1a2e' }}>
+                                    {personal.name || 'Your Name'}
+                                </h1>
+                                <p className='title' style={{ color: '#2563eb', marginTop: '2px', fontSize: '0.95rem' }}>
+                                    {personal.title || 'Your Job Title'}
+                                </p>
+                                <div className="contact" style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '0.78rem', color: '#555', flexWrap: 'wrap' }}>
+                                    {personal.email && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Mail style={{ width: '12px', height: '12px' }} />{personal.email}</span>}
+                                    {personal.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Phone style={{ width: '12px', height: '12px' }} />{personal.phone}</span>}
+                                    {personal.location && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin style={{ width: '12px', height: '12px' }} />{personal.location}</span>}
+                                </div>
+                            </div>
+
+                            {personal.summary && (
+                                <div className='section' style={{ marginBottom: '18px' }}>
+                                    <p className='section-title' style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#2563eb', borderBottom: '1px solid #dbeafe', paddingBottom: '3px', marginBottom: '8px' }}>
+                                        Professional Summary
+                                    </p>
+                                    <p style={{ fontSize: '0.85rem', color: '#444', lineHeight: 1.6 }}>{personal.summary}</p>
+                                </div>
+                            )}
+
+                            {/* Experience */}
+                            {experiences.some(e => e.role || e.company) && (
+                                <div className="section" style={{ marginBottom: '18px' }}>
+                                    <p className="section-title" style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#2563eb', borderBottom: '1px solid #dbeafe', paddingBottom: '3px', marginBottom: '10px' }}>
+                                        Work Experience
+                                    </p>
+                                    {experiences.map(exp => (exp.role || exp.company) ? (
+                                        <div key={exp.id} style={{ marginBottom: '12px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{exp.role || '—'}</span>
+                                                <span style={{ fontSize: '0.78rem', color: '#888' }}>{exp.period}</span>
+                                            </div>
+                                            <p style={{ color: '#555', fontSize: '0.82rem' }}>{exp.company}</p>
+                                            {exp.description && <p style={{ fontSize: '0.82rem', color: '#444', lineHeight: 1.6, marginTop: '3px' }}>{exp.description}</p>}
+                                        </div>
+                                    ) : null)}
+                                </div>
+                            )}
+
+                            {/* Education */}
+                            {education.some(e => e.degree || e.institution) && (
+                                <div className="section" style={{ marginBottom: '18px' }}>
+                                    <p className="section-title" style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#2563eb', borderBottom: '1px solid #dbeafe', paddingBottom: '3px', marginBottom: '10px' }}>
+                                        Education
+                                    </p>
+                                    {education.map(edu => (edu.degree || edu.institution) ? (
+                                        <div key={edu.id} style={{ marginBottom: '10px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{edu.degree || '—'}</span>
+                                                <span style={{ fontSize: '0.78rem', color: '#888' }}>{edu.period}</span>
+                                            </div>
+                                            <p style={{ color: '#555', fontSize: '0.82rem' }}>{edu.institution}{edu.gpa ? ` — GPA: ${edu.gpa}` : ''}</p>
+                                        </div>
+                                    ) : null)}
+                                </div>
+                            )}
+
+                            {/* Skills */}
+                            {skills.filter(Boolean).length > 0 && (
+                                <div className='section'>
+                                    <p className='section-title' style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#2563eb', borderBottom: '1px solid #dbeafe', paddingBottom: '3px', marginBottom: '10px' }}>
+                                        Skills
+                                    </p>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                        {skills.filter(Boolean).map(s => (
+                                            <span key={s} style={{ background: '#dbeafe', color: '#1d4ed8', fontSize: '0.78rem', padding: '2px 10px', borderRadius: '20px' }}>
+                                                {s}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

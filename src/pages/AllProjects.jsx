@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import NavBar from '../components/NavBar';
 import ProjectCard from '../components/ProjectCard';
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Tag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Clock, DollarSign, Tag, } from 'lucide-react';
 import HeroBanner from '../components/HeroBanner';
 import Footer from '../components/Footer';
+import Navbar2 from '../components/Navbar2';
 
 const AllProjects = () => {
     const categories = [
@@ -288,7 +289,7 @@ const AllProjects = () => {
 
     return (
         <>
-            <NavBar />
+            <Navbar2 />
             <HeroBanner />
             <div className="container mx-auto px-20 py-8 bg-background">
                 <div className='grid grid-cols-4 gap-5'>
