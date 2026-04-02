@@ -1,135 +1,75 @@
 import React from 'react'
 import NavBar from '../../components/NavBar'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Briefcase, File, FileText, LayoutDashboard, Settings, Shield, UploadIcon, Wallet } from 'lucide-react'
+import {
+  Briefcase, File, FileText, LayoutDashboard,
+  Settings, Shield, UploadIcon, Wallet
+} from 'lucide-react'
+import Navbar2 from '../../components/Navbar2'
+
+const navItems = [
+  { to: '', end: true, icon: LayoutDashboard, label: 'Dashboard' },
+  { to: 'browse-projects', icon: Briefcase, label: 'Browse Projects' },
+  { to: 'applied-projects', icon: FileText, label: 'Applied Projects' },
+  { to: 'nda-requests', icon: Shield, label: 'NDA Requests', badge: 2 },
+  { to: 'submissions', icon: UploadIcon, label: 'Submissions' },
+  { to: 'resumebuilder', icon: File, label: 'Resume Builder' },
+  { to: 'wallet', icon: Wallet, label: 'Wallet' },
+  { to: 'settings', icon: Settings, label: 'Settings' },
+]
 
 const StudentDashBoard = () => {
   return (
-    <div className='min-h-screen'>
-      {/* Navbar for studentDashBoard */}
-      <NavBar />
+    <div className='min-h-screen bg-slate-950'>
+      <Navbar2 />
 
-      <div className='container px-20 mx-auto flex bg-background'>
-        {/* left side pannel */}
-        <div className='flex-1 bg-white border-x border-border px-4 py-6 min-h-screen'>
-          <div>
-            <ul className='flex flex-col gap-2'>
-              <NavLink
-                to=""
-                end
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <LayoutDashboard className="w-5 h-5" />
-                <span>Dashboard</span>
-              </NavLink>
+      <div className='flex'>
+        {/* ── Sidebar ── */}
+        <aside className='w-60 shrink-0 min-h-screen bg-slate-900 border-r border-slate-800 px-3 py-6 sticky top-16'>
 
-              <NavLink
-                to="browse-projects"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <Briefcase className="w-5 h-5" />
-                <span>Browse Projects</span>
-              </NavLink>
-
-              <NavLink
-                to="applied-projects"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <FileText className="w-5 h-5" />
-                <span>Applied Projects</span>
-              </NavLink>
-
-              <NavLink
-                to="nda-requests"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <Shield className="w-5 h-5" />
-                <span>NDA Requests</span>
-              </NavLink>
-
-              <NavLink
-                to="submissions"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <UploadIcon className="w-5 h-5" />
-                <span>Submissions</span>
-              </NavLink>
-
-              <NavLink
-                to="resumebuilder"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <File className="w-5 h-5" />
-                <span>Resume Builder</span>
-              </NavLink>
-
-              <NavLink
-                to="wallet"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <Wallet className="w-5 h-5" />
-                <span>Wallet</span>
-              </NavLink>
-
-              <NavLink
-                to="settings"
-                className={({ isActive }) =>
-                  [
-                    "flex items-center gap-3 hover:bg-gray-100 py-3 px-2 rounded-2xl",
-                    isActive ? "text-primary bg-blue-50" : "text-text-secondary"
-                  ].join(" ")
-                }
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
-              </NavLink>
-
-
-            </ul>
+          {/* User mini profile */}
+          <div className='flex items-center gap-3 px-3 mb-8'>
+            <div className='w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0'>
+              AJ
+            </div>
+            <div className='min-w-0'>
+              <p className='text-sm font-semibold text-white truncate'>Alex Johnson</p>
+              <p className='text-xs text-slate-500 truncate'>CS Student · MIT</p>
+            </div>
           </div>
-        </div>
 
-        {/* right side pannel */}
-        <div className='flex-4 min-h-screen bg-background py-6 px-4'>
+          <p className='text-xs font-semibold text-slate-600 uppercase tracking-widest px-3 mb-3'>Menu</p>
+
+          <ul className='flex flex-col gap-1'>
+            {navItems.map(({ to, end, icon: Icon, label, badge }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 ${isActive
+                    ? 'bg-blue-600 text-white font-medium'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`
+                }
+              >
+                <Icon className='w-4 h-4 shrink-0' />
+                <span className='flex-1'>{label}</span>
+                {badge && (
+                  <span className='text-xs bg-blue-500 text-white font-semibold px-1.5 py-0.5 rounded-full leading-none'>
+                    {badge}
+                  </span>
+                )}
+              </NavLink>
+            ))}
+          </ul>
+        </aside>
+
+        {/* ── Main content ── */}
+        <main className='flex-1 min-h-screen bg-slate-950 p-6'>
           <Outlet />
-        </div>
+        </main>
       </div>
-
     </div>
   )
 }

@@ -372,10 +372,12 @@ export default function HomePage() {
             </section>
 
             {/* ── FOR STUDENTS / OWNERS SPLIT ── */}
-            <section className="py-24 bg-gray-50">
+            <section className="py-24 bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 relative">
+                <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Students */}
-                    <div className="relative rounded-3xl overflow-hidden bg-blue-600 p-10 flex flex-col justify-between min-h-[380px]">
+                    <div className="relative rounded-3xl overflow-hidden bg-blue-900 p-10 flex flex-col justify-between min-h-[380px]">
                         <img src={HERO_IMG_2} alt="student" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30" />
                         <div className="relative z-10">
                             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">

@@ -1,17 +1,69 @@
-import { Bell, CreditCard, Edit, SaveIcon, Shield, UploadIcon, User, X } from 'lucide-react'
+import { Bell, Building2, CreditCard, Edit, ExternalLink, Globe, MapPin, SaveIcon, Shield, UploadIcon, User, X } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 
+// ── Shared primitives (outside parent to avoid remount on keystroke) ───────────
+const InputField = ({ label, value, onChange, disabled, type = 'text', placeholder = '' }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</label>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      placeholder={placeholder}
+      className={`w-full px-4 py-2.5 rounded-xl text-sm border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+        ${disabled
+          ? 'bg-slate-800/40 border-slate-700/50 text-slate-500 cursor-not-allowed'
+          : 'bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-600'}`}
+    />
+  </div>
+)
+
+const SectionTitle = ({ title, subtitle }) => (
+  <div className="mb-5">
+    <h2 className="text-base font-semibold text-white">{title}</h2>
+    {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+  </div>
+)
+
+const Divider = () => <div className="border-t border-slate-800 my-6" />
+
+const FooterActions = ({ isEditing, onEdit, onCancel, onSave, editLabel = 'Edit Profile' }) => (
+  <div className="flex items-center justify-end gap-3 pt-5 border-t border-slate-800">
+    {!isEditing ? (
+      <button onClick={onEdit}
+        className="flex items-center gap-2 text-sm text-blue-400 border border-blue-500/30 px-5 py-2.5 rounded-xl hover:bg-blue-500/10 transition-all cursor-pointer">
+        <Edit className="w-4 h-4" /> {editLabel}
+      </button>
+    ) : (
+      <>
+        <button onClick={onCancel}
+          className="flex items-center gap-2 text-sm text-slate-400 border border-slate-700 px-5 py-2.5 rounded-xl hover:border-slate-600 hover:text-white transition-all cursor-pointer">
+          <X className="w-4 h-4" /> Cancel
+        </button>
+        <button onClick={onSave}
+          className="flex items-center gap-2 text-sm text-white bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-xl transition-colors cursor-pointer">
+          <SaveIcon className="w-4 h-4" /> Save Changes
+        </button>
+      </>
+    )}
+  </div>
+)
+
+// ── Main Component ────────────────────────────────────────────────────────────
 const OwnerSettings = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'account', label: 'Account', icon: CreditCard },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Shield }
+    { id: 'security', label: 'Security', icon: Shield },
   ]
 
-  const [activeTab, setActiveTab] = useState('profile');
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile')
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [profilePhoto, setProfilePhoto] = useState(null)
+  const fileInputRef = useRef(null)
 
   const [profileData, setProfileData] = useState({
     companyName: 'TechStart Inc',
@@ -25,302 +77,207 @@ const OwnerSettings = () => {
     interests: ['Web Development', 'Mobile Apps', 'UI/UX Design', 'AI/ML', 'Cloud Solutions'],
     website: 'https://techstart.com',
     linkedin: 'https://linkedin.com/company/techstart',
-    twitter: 'https://twitter.com/techstart'
-  });
+    twitter: 'https://twitter.com/techstart',
+  })
 
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const [tempProfileData, setTempProfileData] = useState(profileData);
-  const [tempProfilePhoto, setTempProfilePhoto] = useState(profilePhoto);
+  const [tempProfileData, setTempProfileData] = useState(profileData)
+  const [tempProfilePhoto, setTempProfilePhoto] = useState(profilePhoto)
 
-  const fileInputRef = useRef(null);
-
+  // ── Handlers (all original logic preserved) ──────────────────────────────
   const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-
-      if (file.size > 2 * 1024 * 1024) {
-        alert('File size must be less than 2MB');
-        return;
-      }
-
-      if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) {
-        alert('Only JPG, PNG, or GIF files are allowed');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTempProfilePhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) { alert('File size must be less than 2MB'); return }
+    if (!file.type.match(/image\/(jpeg|jpg|png|gif)/)) { alert('Only JPG, PNG, or GIF files are allowed'); return }
+    const reader = new FileReader()
+    reader.onloadend = () => setTempProfilePhoto(reader.result)
+    reader.readAsDataURL(file)
   }
 
-  const handleUpdateProfile = () => {
-    setTempProfileData(profileData);
-    setIsEditingProfile(true);
-  }
+  const handleUpdateProfile = () => { setTempProfileData(profileData); setIsEditingProfile(true) }
+  const handleSaveChanges = () => { setProfileData(tempProfileData); setProfilePhoto(tempProfilePhoto); setIsEditingProfile(false) }
+  const handleCancelEdit = () => { setTempProfileData(profileData); setIsEditingProfile(false); setTempProfilePhoto(profilePhoto) }
 
-  const handleSaveChanges = () => {
-    setProfileData(tempProfileData);
-    setProfilePhoto(tempProfilePhoto);
-    setIsEditingProfile(false);
-  }
+  const currentProfile = isEditingProfile ? tempProfileData : profileData
+  const currentPhoto = isEditingProfile ? tempProfilePhoto : profilePhoto
 
-  const handleCancelEdit = () => {
-    setTempProfileData(profileData);
-    setIsEditingProfile(false);
-    setTempProfilePhoto(profilePhoto);
-  };
+  // ── Tab renderers ─────────────────────────────────────────────────────────
+  const renderProfileTab = () => (
+    <div>
+      {/* Company logo + upload */}
+      <div className="flex items-center gap-5 mb-6">
+        {currentPhoto
+          ? <img src={currentPhoto} alt="Company" className="w-20 h-20 rounded-2xl object-cover border-2 border-slate-700" />
+          : <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center text-white text-xl font-bold shrink-0">
+            {currentProfile.companyName.slice(0, 2).toUpperCase()}
+          </div>
+        }
+        <div>
+          <input type="file" ref={fileInputRef} accept="image/jpeg,image/jpg,image/png,image/gif" onChange={handlePhotoUpload} className="hidden" />
+          <button
+            disabled={!isEditingProfile}
+            onClick={() => fileInputRef.current?.click()}
+            className={`flex items-center gap-2 text-xs px-4 py-2 rounded-xl border transition-all mb-2
+              ${isEditingProfile
+                ? 'border-blue-500/30 text-blue-400 hover:bg-blue-500/10 cursor-pointer'
+                : 'border-slate-700/50 text-slate-600 cursor-not-allowed opacity-50'}`}
+          >
+            <UploadIcon className="w-3.5 h-3.5" /> Upload Logo
+          </button>
+          <p className="text-xs text-slate-600">JPG, PNG or GIF · Max 2MB</p>
+        </div>
+      </div>
 
+      <Divider />
+      <SectionTitle title="Company Information" subtitle="Basic details about your organization" />
 
+      <div className="grid grid-cols-2 gap-4 mb-2">
+        <InputField label="Company Name" value={currentProfile.companyName} onChange={e => setTempProfileData(p => ({ ...p, companyName: e.target.value }))} disabled={!isEditingProfile} />
+        <InputField label="Contact Person" value={currentProfile.contactPerson} onChange={e => setTempProfileData(p => ({ ...p, contactPerson: e.target.value }))} disabled={!isEditingProfile} />
+        <InputField label="Email" value={currentProfile.email} onChange={e => setTempProfileData(p => ({ ...p, email: e.target.value }))} disabled={!isEditingProfile} type="email" />
+        <InputField label="Phone Number" value={currentProfile.phone} onChange={e => setTempProfileData(p => ({ ...p, phone: e.target.value }))} disabled={!isEditingProfile} />
+        <InputField label="Industry" value={currentProfile.industry} onChange={e => setTempProfileData(p => ({ ...p, industry: e.target.value }))} disabled={!isEditingProfile} />
+        <InputField label="Company Size" value={currentProfile.companySize} onChange={e => setTempProfileData(p => ({ ...p, companySize: e.target.value }))} disabled={!isEditingProfile} />
+        <div className="col-span-2">
+          <InputField label="Location" value={currentProfile.location} onChange={e => setTempProfileData(p => ({ ...p, location: e.target.value }))} disabled={!isEditingProfile} />
+        </div>
+        <div className="col-span-2 flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Company Bio</label>
+          <textarea
+            rows={4}
+            value={currentProfile.bio}
+            onChange={e => setTempProfileData(p => ({ ...p, bio: e.target.value }))}
+            disabled={!isEditingProfile}
+            className={`w-full px-4 py-2.5 rounded-xl text-sm border resize-none transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+              ${!isEditingProfile
+                ? 'bg-slate-800/40 border-slate-700/50 text-slate-500 cursor-not-allowed'
+                : 'bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-600'}`}
+          />
+        </div>
+      </div>
 
-  const renderProfileTab = () => {
-    return (
-      <div className='px-3'>
-        <h2 className='text-2xl font-semibold mt-2'>Company Information</h2>
+      <Divider />
+      <SectionTitle title="Professional Links" subtitle="Your company's online presence" />
 
-        <div className='flex items-center gap-8 my-8'>
-          {isEditingProfile ? (
-            tempProfilePhoto ? (
-              <img className='w-24 h-24 flex items-center justify-center object-cover border-4 border-blue-100 rounded-full' src={tempProfilePhoto} alt="Profile" />
-            ) : (
-              <div className='w-24 h-24 bg-primary text-white text-3xl flex items-center justify-center rounded-full'>
-                {tempProfileData.companyName.slice(0, 2).toUpperCase()}
-              </div>
-            )
-          ) : (
-            profilePhoto ? (
-              <img className='w-24 h-24 flex items-center justify-center object-cover border-4 border-blue-100 rounded-full' src={profilePhoto} alt="Profile" />
-            ) : (
-              <div className='w-24 h-24 bg-primary text-white text-3xl flex items-center justify-center rounded-full'>
+      <div className="flex flex-col gap-4">
+        <InputField label="Company Website" value={currentProfile.website} onChange={e => setTempProfileData(p => ({ ...p, website: e.target.value }))} disabled={!isEditingProfile} />
+        <InputField label="LinkedIn" value={currentProfile.linkedin} onChange={e => setTempProfileData(p => ({ ...p, linkedin: e.target.value }))} disabled={!isEditingProfile} />
+        <InputField label="Twitter" value={currentProfile.twitter} onChange={e => setTempProfileData(p => ({ ...p, twitter: e.target.value }))} disabled={!isEditingProfile} />
+      </div>
+
+      <FooterActions
+        isEditing={isEditingProfile}
+        onEdit={handleUpdateProfile}
+        onCancel={handleCancelEdit}
+        onSave={handleSaveChanges}
+        editLabel="Edit Profile"
+      />
+    </div>
+  )
+
+  const renderNotificationsTab = () => (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-14 h-14 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center mb-4">
+        <Bell className="w-6 h-6 text-slate-500" />
+      </div>
+      <h3 className="text-white font-semibold mb-2">Notification Settings</h3>
+      <p className="text-slate-500 text-sm">Email and push notification preferences — coming soon.</p>
+    </div>
+  )
+
+  const renderSecurityTab = () => (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-14 h-14 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center mb-4">
+        <Shield className="w-6 h-6 text-slate-500" />
+      </div>
+      <h3 className="text-white font-semibold mb-2">Security Settings</h3>
+      <p className="text-slate-500 text-sm">Password, two-factor auth, and active sessions — coming soon.</p>
+    </div>
+  )
+
+  const renderAccountTab = () => (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-14 h-14 bg-slate-800 border border-slate-700 rounded-2xl flex items-center justify-center mb-4">
+        <CreditCard className="w-6 h-6 text-slate-500" />
+      </div>
+      <h3 className="text-white font-semibold mb-2">Account Settings</h3>
+      <p className="text-slate-500 text-sm">Billing, subscription, and account management — coming soon.</p>
+    </div>
+  )
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  return (
+    <div className="min-h-screen">
+
+      {/* Page header */}
+      <div className="mb-6">
+        <p className="text-blue-400 text-xs font-semibold uppercase tracking-widest mb-1">Preferences</p>
+        <h1 className="text-3xl font-bold text-white mb-1">Settings</h1>
+        <p className="text-slate-500 text-sm">Manage your account settings and preferences</p>
+      </div>
+
+      <div className="grid grid-cols-4 gap-5 items-start">
+
+        {/* ── Sidebar tabs ── */}
+        <aside className="col-span-1">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-2 sticky top-6">
+            {/* Company mini profile */}
+            <div className="flex items-center gap-3 px-3 py-3 mb-2 border-b border-slate-800">
+              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
                 {profileData.companyName.slice(0, 2).toUpperCase()}
               </div>
-            )
-          )}
-          <div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept='image/jpeg,image/jpg,image/png,image/gif'
-              onChange={handlePhotoUpload}
-              className='hidden'
-            />
-            <button
-              className='flex items-center gap-2 text-primary border-2 border-primary px-4 py-2 rounded-2xl mb-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-              disabled={!isEditingProfile}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <UploadIcon className='w-4 h-4' />
-              Upload Photo
-            </button>
-            <p className='text-text-secondary'>JPG, PNG or GIF (Max 2MB)</p>
-          </div>
-        </div>
-
-        <hr className='border border-border' />
-
-        <div className='grid grid-cols-2 gap-4 my-8'>
-          <div className='w-full flex flex-col gap-3'>
-            <label>Company Name</label>
-            <input
-              type="text"
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.companyName : profileData.companyName}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, companyName: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Contact Person</label>
-            <input
-              type="text"
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.contactPerson : profileData.contactPerson}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, contactPerson: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Email</label>
-            <input
-              type="email"
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.email : profileData.email}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, email: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Phone Number</label>
-            <input
-              type='text'
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.phone : profileData.phone}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, phone: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Industry</label>
-            <input
-              type='text'
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.industry : profileData.industry}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, industry: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Company Size</label>
-            <input
-              type='text'
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.companySize : profileData.companySize}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, companySize: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Location</label>
-            <input
-              type='text'
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.location : profileData.location}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, location: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full col-span-2 flex flex-col gap-3'>
-            <label>Bio</label>
-            <textarea
-              rows={4}
-              className='w-full px-4 py-3 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100'
-              value={isEditingProfile ? tempProfileData.bio : profileData.bio}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, bio: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-        </div>
-
-        <div className='mt-3'>
-          <h2 className='text-2xl font-semibold mb-5'>Professional Links</h2>
-
-          <div className='w-full flex flex-col gap-3 mb-3'>
-            <label>Company Website</label>
-            <input
-              type="text"
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.website : profileData.website}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, website: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3 mb-3'>
-            <label>LinkedIn Profile</label>
-            <input
-              type="text"
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.linkedin : profileData.linkedin}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, linkedin: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-
-          <div className='w-full flex flex-col gap-3'>
-            <label>Twitter Profile</label>
-            <input
-              type="text"
-              className='w-full px-4 py-3 border text-text-secondary border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-              value={isEditingProfile ? tempProfileData.twitter : profileData.twitter}
-              onChange={(e) => setTempProfileData({ ...tempProfileData, twitter: e.target.value })}
-              disabled={!isEditingProfile}
-            />
-          </div>
-        </div>
-
-        <div className='flex items-center justify-end gap-5 mt-5'>
-          {!isEditingProfile ? (
-
-            <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
-              onClick={handleUpdateProfile}
-            >
-              <Edit className='w-5 h-5' />
-              Update Profile
-            </button>
-
-          ) : (
-            <>
-              <button className='flex items-center gap-2 text-primary border-2 border-primary px-5 py-3 rounded-2xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
-                onClick={handleCancelEdit}
-              >
-                <X className='w-5 h-5' />
-                Cancel
-              </button>
-
-              <button className='flex items-center gap-2 text-white bg-primary border-2 border-primary px-5 py-3 rounded-2xl hover:bg-blue-600 cursor-pointer'
-                onClick={handleSaveChanges}
-              >
-                <SaveIcon className='w-5 h-5' />
-                Save Changes
-              </button>
-            </>
-          )}
-        </div>
-
-      </div>
-    )
-  }
-
-  const renderNotificationsTab = () => {
-
-  }
-
-  const renderSecurityTab = () => {
-
-  }
-
-  return (
-    <div>
-      <div>
-        <h1 className='font-bold text-4xl'>Settings</h1>
-        <p className='text-text-secondary mt-2'>Manage your account settings and preferences</p>
-      </div>
-
-      <div className='bg-white mt-8 p-2 rounded-2xl shadow-md'>
-        <div className='flex items-center gap-3'>
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-
-            return (
-              <div key={tab.id}>
-                <button
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-3 px-4 rounded-2xl cursor-pointer ${activeTab === tab.id ? 'bg-blue-50 text-primary' : 'text-text-secondary'}`}
-                >
-                  <Icon className='w-5 h-5' />
-                  {tab.label}
-                </button>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-white truncate">{profileData.companyName}</p>
+                <p className="text-xs text-slate-500 truncate">Project Owner</p>
               </div>
-            )
-          })}
-        </div>
-      </div>
+            </div>
 
-      <div className='mt-7'>
-        {activeTab === 'profile' && renderProfileTab()}
-        {activeTab === 'notifications' && renderNotificationsTab()}
-        {activeTab === 'security' && renderSecurityTab()}
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-widest px-3 py-2">Menu</p>
+            {tabs.map(({ id, label, icon: Icon }) => {
+              const active = activeTab === id
+              return (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all mb-0.5 last:mb-0 cursor-pointer
+                    ${active ? 'bg-blue-600 text-white font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Quick info card */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 mt-4">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-widest mb-3">Company Info</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <Building2 className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                <span className="truncate">{profileData.industry}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                <span className="truncate">{profileData.location}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <Globe className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                <a href={profileData.website} target="_blank" rel="noopener noreferrer"
+                  className="truncate text-blue-400 hover:underline">{profileData.website.replace('https://', '')}</a>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* ── Content panel ── */}
+        <main className="col-span-3 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          {activeTab === 'profile' && renderProfileTab()}
+          {activeTab === 'notifications' && renderNotificationsTab()}
+          {activeTab === 'security' && renderSecurityTab()}
+          {activeTab === 'account' && renderAccountTab()}
+        </main>
+
       </div>
     </div>
   )

@@ -1,575 +1,428 @@
-import { CheckCircle, Clock, Eye, File, FileText, Send, Star, UploadIcon, UserCheck, X } from 'lucide-react';
+import {
+  CheckCircle, Clock, Eye, File, FileText,
+  Send, Star, UploadIcon, UserCheck, X,
+  DollarSign, Briefcase, Users, AlertTriangle
+} from 'lucide-react'
 import React, { useRef, useState } from 'react'
-import StatusBadge from '../../components/StatusBadge';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 
+// ── Inline StatusBadge ────────────────────────────────────────────────────────
+const statusConfig = {
+  'not-sent': { label: 'NDA Not Sent', color: 'bg-slate-500/10 text-slate-400 border-slate-500/20' },
+  'pending': { label: 'NDA Pending', color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' },
+  'nda-sent': { label: 'NDA Sent', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+  'nda-accepted': { label: 'NDA Accepted', color: 'bg-green-500/10 text-green-400 border-green-500/20' },
+}
+const StatusBadge = ({ status }) => {
+  const cfg = statusConfig[status] || { label: status, color: 'bg-slate-500/10 text-slate-400 border-slate-500/20' }
+  return <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${cfg.color}`}>{cfg.label}</span>
+}
+
+// ── Static data (unchanged) ───────────────────────────────────────────────────
+const projects = [
+  { id: 1, title: 'React Dashboard Development', budget: 800, deadline: '2 weeks' },
+  { id: 2, title: 'Mobile App UI Design', budget: 500, deadline: '10 days' },
+  { id: 3, title: 'Content Writing - Tech Blog', budget: 200, deadline: '1 week' },
+]
+
+const allApplicants = [
+  { id: 1, name: 'Alex Johnson', projectId: 1, university: 'MIT', degree: 'Computer Science', rating: 4.9, completedProjects: 12, appliedDate: '2025-11-18T20:00:00Z', skills: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'nda-accepted', ndaAcceptedDate: '2025-12-19T10:15:00Z' },
+  { id: 2, name: 'Sarah Chen', projectId: 1, university: 'Stanford University', degree: 'Software Engineering', rating: 4.8, completedProjects: 15, appliedDate: '2025-12-11T10:15:00Z', skills: ['React', 'Vue.js', 'UI/UX', 'Figma'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'nda-sent', ndaSentDate: '2025-12-11T10:15:00Z' },
+  { id: 3, name: 'Mike Wilson', projectId: 1, university: 'UCLA', degree: 'Information Technology', rating: 4.7, completedProjects: 8, appliedDate: '2025-12-19T10:15:00Z', skills: ['JavaScript', 'React', 'CSS', 'HTML'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'not-sent' },
+  { id: 4, name: 'Emma Davis', projectId: 2, university: 'UC Berkeley', degree: 'Computer Science', rating: 4.9, completedProjects: 18, appliedDate: '2025-12-19T10:15:00Z', skills: ['React Native', 'Flutter', 'UI/UX', 'Figma'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'nda-accepted', ndaAcceptedDate: '2025-12-19T10:15:00Z' },
+  { id: 5, name: 'James Brown', projectId: 2, university: 'Harvard University', degree: 'Design', rating: 4.6, completedProjects: 10, appliedDate: '2025-12-19T10:15:00Z', skills: ['Figma', 'Adobe XD', 'Sketch', 'UI/UX'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'pending', ndaSentDate: '2025-12-19T10:15:00Z' },
+  { id: 6, name: 'Sophia Martinez', projectId: 3, university: 'Columbia University', degree: 'English Literature', rating: 4.8, completedProjects: 14, appliedDate: '2025-12-19T10:15:00Z', skills: ['Content Writing', 'SEO', 'Copywriting', 'Technical Writing'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'not-sent' },
+  { id: 7, name: 'David Lee', projectId: 3, university: 'NYU', degree: 'Journalism', rating: 4.7, completedProjects: 11, appliedDate: '2025-12-19T06:15:00Z', skills: ['Content Writing', 'Blogging', 'Research', 'Editing'], projectPlan: 'Available', cv: 'Available', ndaStatus: 'not-sent' },
+]
+
+// ── timeAgo (unchanged logic) ─────────────────────────────────────────────────
+const timeAgo = (dateString) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  let diffMs = now - date
+  if (diffMs < 0) return 'Just now'
+  const seconds = Math.floor(diffMs / 1000)
+  const minutes = Math.floor(diffMs / 60000)
+  const hours = Math.floor(diffMs / 3600000)
+  const days = Math.floor(diffMs / 86400000)
+  const weeks = Math.floor(days / 7)
+  const months = Math.floor(days / 30)
+  const years = Math.floor(days / 365)
+  if (seconds < 60) return 'Just now'
+  if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`
+  if (weeks < 5) return `${weeks} week${weeks > 1 ? 's' : ''} ago`
+  if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`
+  return `${years} year${years > 1 ? 's' : ''} ago`
+}
+
+// ── Modal backdrop ────────────────────────────────────────────────────────────
+const Backdrop = ({ onClick }) => (
+  <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClick} />
+)
+
+// ── Main Component ────────────────────────────────────────────────────────────
 const AllApplicant = () => {
+  const navigate = useNavigate()
 
-  const navigate = useNavigate();
-
-  const [showNDAModel, setShowNDAModel] = useState(false);
-  const [showAssignProjectModel, setShowAssignProjectModel] = useState(false);
-  const [showSendNDAModel, setShowSendNDAModel] = useState(false);
-
-  const [selectedApplicant, setSelectedApplicant] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
-
-  const projects = [
-    {
-      id: 1,
-      title: 'React Dashboard Development',
-      budget: 800,
-      deadline: '2 weeks'
-    },
-    {
-      id: 2,
-      title: 'Mobile App UI Design',
-      budget: 500,
-      deadline: '10 days'
-    },
-    {
-      id: 3,
-      title: 'Content Writing - Tech Blog',
-      budget: 200,
-      deadline: '1 week'
-    }
-  ];
-
-  // All applicants with their project associations
-  const allApplicants = [
-    {
-      id: 1,
-      name: 'Alex Johnson',
-      projectId: 1,
-      university: 'MIT',
-      degree: 'Computer Science',
-      rating: 4.9,
-      completedProjects: 12,
-      appliedDate: '2025-11-18T20:00:00Z',
-      skills: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'nda-accepted',
-      ndaAcceptedDate: '2025-12-19T10:15:00Z',
-      feedbacks: [
-        {
-          id: 1,
-          projectTitle: 'E-commerce Platform Frontend',
-          clientName: 'TechCorp Inc.',
-          rating: 5,
-          date: 'Nov 2025',
-          comment: 'Excellent work! Alex delivered the project ahead of schedule with outstanding quality. Very professional and responsive to feedback. Highly recommended!',
-          skills: ['React', 'TypeScript', 'Tailwind CSS']
-        },
-        {
-          id: 2,
-          projectTitle: 'Dashboard Analytics Tool',
-          clientName: 'DataViz Solutions',
-          rating: 5,
-          date: 'Oct 2025',
-          comment: 'Amazing developer with great attention to detail. The dashboard exceeded our expectations. Will definitely work with Alex again.',
-          skills: ['React', 'Chart.js', 'Node.js']
-        },
-        {
-          id: 3,
-          projectTitle: 'Mobile App Landing Page',
-          clientName: 'StartupX',
-          rating: 4.8,
-          date: 'Sep 2025',
-          comment: 'Great communication and solid technical skills. Delivered a beautiful, responsive landing page. Minor revisions needed but overall very satisfied.',
-          skills: ['HTML', 'CSS', 'JavaScript']
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Sarah Chen',
-      projectId: 1,
-      university: 'Stanford University',
-      degree: 'Software Engineering',
-      rating: 4.8,
-      completedProjects: 15,
-      appliedDate: '2025-12-11T10:15:00Z',
-      skills: ['React', 'Vue.js', 'UI/UX', 'Figma'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'nda-sent',
-      ndaSentDate: '2025-12-11T10:15:00Z',
-      feedbacks: [
-        {
-          id: 1,
-          projectTitle: 'SaaS Product Redesign',
-          clientName: 'CloudTech',
-          rating: 5,
-          date: 'Dec 2025',
-          comment: 'Sarah is an exceptional designer and developer. The UI/UX work was top-notch and the implementation was flawless. Highly professional!',
-          skills: ['Figma', 'React', 'UI/UX']
-        },
-        {
-          id: 2,
-          projectTitle: 'Company Website Revamp',
-          clientName: 'Digital Agency Pro',
-          rating: 4.7,
-          date: 'Nov 2025',
-          comment: 'Very talented and creative. Delivered modern, clean designs with smooth animations. Great experience working together.',
-          skills: ['Vue.js', 'CSS', 'Figma']
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Mike Wilson',
-      projectId: 1,
-      university: 'UCLA',
-      degree: 'Information Technology',
-      rating: 4.7,
-      completedProjects: 8,
-      appliedDate: '2025-12-19T10:15:00Z',
-      skills: ['JavaScript', 'React', 'CSS', 'HTML'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'not-sent',
-      feedbacks: [
-        {
-          id: 1,
-          projectTitle: 'Portfolio Website',
-          clientName: 'Creative Studio',
-          rating: 4.5,
-          date: 'Oct 2025',
-          comment: 'Good work overall. Mike was responsive and made revisions promptly. The final product met our requirements.',
-          skills: ['HTML', 'CSS', 'JavaScript']
-        },
-        {
-          id: 2,
-          projectTitle: 'Blog Platform Development',
-          clientName: 'Content Creators Hub',
-          rating: 4.9,
-          date: 'Sep 2025',
-          comment: 'Fantastic job! Clean code, great documentation, and excellent communication throughout the project.',
-          skills: ['React', 'Node.js', 'MongoDB']
-        }
-      ]
-    },
-    {
-      id: 4,
-      name: 'Emma Davis',
-      projectId: 2,
-      university: 'UC Berkeley',
-      degree: 'Computer Science',
-      rating: 4.9,
-      completedProjects: 18,
-      appliedDate: '2025-12-19T10:15:00Z',
-      skills: ['React Native', 'Flutter', 'UI/UX', 'Figma'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'nda-accepted',
-      ndaAcceptedDate: '2025-12-19T10:15:00Z'
-    },
-    {
-      id: 5,
-      name: 'James Brown',
-      projectId: 2,
-      university: 'Harvard University',
-      degree: 'Design',
-      rating: 4.6,
-      completedProjects: 10,
-      appliedDate: '2025-12-19T10:15:00Z',
-      skills: ['Figma', 'Adobe XD', 'Sketch', 'UI/UX'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'pending',
-      ndaSentDate: '2025-12-19T10:15:00Z'
-    },
-    {
-      id: 6,
-      name: 'Sophia Martinez',
-      projectId: 3,
-      university: 'Columbia University',
-      degree: 'English Literature',
-      rating: 4.8,
-      completedProjects: 14,
-      appliedDate: '2025-12-19T10:15:00Z',
-      skills: ['Content Writing', 'SEO', 'Copywriting', 'Technical Writing'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'not-sent'
-    },
-    {
-      id: 7,
-      name: 'David Lee',
-      projectId: 3,
-      university: 'NYU',
-      degree: 'Journalism',
-      rating: 4.7,
-      completedProjects: 11,
-      appliedDate: '2025-12-19T06:15:00Z',
-      skills: ['Content Writing', 'Blogging', 'Research', 'Editing'],
-      projectPlan: 'Available',
-      cv: 'Available',
-      ndaStatus: 'not-sent'
-    }
-  ];
-
-  const timeAgo = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-
-    let diffMs = now - date;
-
-    // ✅ Handle future dates
-    if (diffMs < 0) {
-      return "Just now";
-    }
-
-    const seconds = Math.floor(diffMs / 1000);
-    const minutes = Math.floor(diffMs / 60000);
-    const hours = Math.floor(diffMs / 3600000);
-    const days = Math.floor(diffMs / 86400000);
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30);
-    const years = Math.floor(days / 365);
-
-    if (seconds < 60) return "Just now";
-    if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-    if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
-    if (weeks < 5) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
-    if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
-    return `${years} year${years > 1 ? "s" : ""} ago`;
-  };
-
-
-  const [file, setFile] = useState(null);
-  const inputRef = useRef(null);
+  const [showNDAModel, setShowNDAModel] = useState(false)
+  const [showAssignProjectModel, setShowAssignProjectModel] = useState(false)
+  const [showSendNDAModel, setShowSendNDAModel] = useState(false)
+  const [selectedApplicant, setSelectedApplicant] = useState(null)
+  const [selectedProject, setSelectedProject] = useState(null)
+  const [file, setFile] = useState(null)
+  const inputRef = useRef(null)
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files?.[0];
-
-    if (selectedFile.size > 5 * 1024 * 1024) {
-      alert("File too large");
-      return;
-    }
-    setFile(selectedFile);
+    const f = e.target.files?.[0]
+    if (!f) return
+    if (f.size > 5 * 1024 * 1024) { alert('File too large'); return }
+    setFile(f)
   }
-
-  const handleRemove = () => {
-    setFile(null);
-
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
-  }
+  const handleRemove = () => { setFile(null); if (inputRef.current) inputRef.current.value = '' }
 
   const closeAllModals = () => {
-    setShowNDAModel(false);
-    setShowAssignProjectModel(false);
-    setShowSendNDAModel(false);
-  };
-
+    setShowNDAModel(false)
+    setShowAssignProjectModel(false)
+    setShowSendNDAModel(false)
+  }
 
   return (
-    <div>
-      <div>
-        <h1 className='font-bold text-4xl'>All Project Applicants</h1>
-        <p className='text-text-secondary mt-2'>Viewing applicants across all projects</p>
+    <div className="min-h-screen">
+
+      {/* ── Page header ── */}
+      <div className="mb-6">
+        <p className="text-blue-400 text-xs font-semibold uppercase tracking-widest mb-1">Applicants</p>
+        <h1 className="text-3xl font-bold text-white mb-1">All Project Applicants</h1>
+        <p className="text-slate-500 text-sm">Viewing applicants across all projects</p>
       </div>
 
-      <div className='mt-8 flex flex-col gap-4'>
-        {projects.map((project) => {
-          const projectApplicants = allApplicants.filter((a) => a.projectId === project.id);
+      {/* ── Projects + applicants ── */}
+      <div className="flex flex-col gap-5">
+        {projects.map(project => {
+          const projectApplicants = allApplicants.filter(a => a.projectId === project.id)
 
           return (
-            <div key={project.id} className='bg-white py-2 px-5 rounded-xl border border-border'>
-              <div className='flex items-start justify-between my-5'>
-                <div>
-                  <h2 className='text-xl font-semibold'>{project.title}</h2>
-                  <div className='flex items-center gap-4 text-text-secondary'>
-                    <span>${project.budget}</span>
-                    <span>{project.deadline}</span>
-                    <span>{projectApplicants.length} applicants</span>
+            <div key={project.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+              {/* Project header */}
+              <div className="flex items-start justify-between mb-5 pb-4 border-b border-slate-800">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                    <Briefcase className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold text-white mb-1">{project.title}</h2>
+                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                      <span className="flex items-center gap-1 text-green-400 font-medium">
+                        <DollarSign className="w-3 h-3" />${project.budget}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />{project.deadline}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />{projectApplicants.length} applicants
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <button
-                  type='button'
-                  className='text-primary border-2 border-primary py-1 px-3 rounded-xl hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'
                   onClick={() => navigate(`${project.id}`)}
+                  className="text-xs text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-xl hover:bg-blue-500/10 transition-colors cursor-pointer"
                 >
-                  View All
+                  View All →
                 </button>
               </div>
 
-              <div className='grid grid-cols-2 gap-3 mb-5'>
-                {projectApplicants.slice(0, 4).map((applicant) => (
-                  <div key={applicant.id} className='bg-white border-2 border-border shadow rounded-xl p-3'>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-4'>
-                        <div className='w-15 h-15 bg-primary text-white rounded-full flex items-center justify-center'>{applicant.name.slice(0, 2).toUpperCase()}</div>
+              {/* Applicant cards grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {projectApplicants.slice(0, 4).map(applicant => (
+                  <div key={applicant.id} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 hover:border-blue-500/30 transition-all group">
+
+                    {/* Top: avatar + name + rating */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                          {applicant.name.slice(0, 2).toUpperCase()}
+                        </div>
                         <div>
-                          <h1 className='font-semibold'>{applicant.name}</h1>
-                          <p className='text-text-secondary'>{applicant.university}</p>
-                          <p className='text-text-secondary'>{applicant.degree}</p>
+                          <p className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors">{applicant.name}</p>
+                          <p className="text-xs text-slate-500">{applicant.university}</p>
+                          <p className="text-xs text-slate-600">{applicant.degree}</p>
                         </div>
                       </div>
-                      <div className='flex text-yellow-500 items-center gap-1'>
-                        <Star className="w-4 h-4 fill-current" />
-                        <span>{applicant.rating}</span>
+                      <div className="flex items-center gap-1 text-yellow-400 shrink-0">
+                        <Star className="w-3 h-3 fill-current" />
+                        <span className="text-xs font-medium">{applicant.rating}</span>
                       </div>
                     </div>
 
-                    <div className='flex items-center gap-3 text-sm mt-3 flex-wrap'>
-                      {applicant.skills.map((skill) => (
-                        <span className='text-primary bg-blue-50 py-1 px-3 rounded-2xl' key={skill}>{skill}</span>
+                    {/* Skills */}
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {applicant.skills.slice(0, 3).map(skill => (
+                        <span key={skill} className="text-xs px-2 py-0.5 bg-slate-700/60 text-slate-400 rounded-md">{skill}</span>
                       ))}
+                      {applicant.skills.length > 3 && (
+                        <span className="text-xs px-2 py-0.5 bg-slate-700/60 text-slate-500 rounded-md">+{applicant.skills.length - 3}</span>
+                      )}
                     </div>
 
-                    <div className='mt-4'>
+                    {/* Status + meta */}
+                    <div className="flex items-center justify-between mb-3">
                       <StatusBadge status={applicant.ndaStatus} />
+                      <span className="text-xs text-slate-600">{timeAgo(applicant.appliedDate)}</span>
                     </div>
 
-                    <div className='flex items-center gap-5 text-text-secondary text-sm mt-4'>
-                      <span>{applicant.completedProjects} projects completed</span>
-                      <span>{timeAgo(applicant.appliedDate)}</span>
-                    </div>
+                    <p className="text-xs text-slate-600 mb-3">{applicant.completedProjects} projects completed</p>
 
-                    <div className='flex items-center gap-2 mt-3'>
-                      <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2 pt-3 border-t border-slate-700/50">
+                      <button
                         onClick={() => navigate(`/owner-dashboard/view-details/${applicant.id}`)}
+                        className="flex items-center gap-1.5 text-xs text-blue-400 border border-blue-500/20 px-2.5 py-1.5 rounded-lg hover:bg-blue-500/10 transition-all cursor-pointer"
                       >
-                        <Eye className='w-4 h-4' />
-                        View Details
+                        <Eye className="w-3 h-3" /> View
                       </button>
 
                       {applicant.ndaStatus === 'pending' ? (
-                        <button className='flex items-center gap-1 border-2 border-yellow-400 text-yellow-500 py-1 px-2 rounded-xl cursor-pointer'>
-                          <Clock className='w-4 h-4' />
-                          NDA Pending
+                        <button className="flex items-center gap-1.5 text-xs text-yellow-400 border border-yellow-500/20 px-2.5 py-1.5 rounded-lg cursor-not-allowed opacity-60">
+                          <Clock className="w-3 h-3" /> Pending
                         </button>
                       ) : (
-                        <button className='flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300'
-                          onClick={() => { closeAllModals(); setSelectedApplicant(applicant); setShowSendNDAModel(true); }}
+                        <button
+                          onClick={() => { closeAllModals(); setSelectedApplicant(applicant); setShowSendNDAModel(true) }}
+                          className="flex items-center gap-1.5 text-xs text-slate-400 border border-slate-600 px-2.5 py-1.5 rounded-lg hover:text-white hover:border-slate-500 transition-all cursor-pointer"
                         >
-                          <Send className='w-4 h-4' />
-                          Send NDA
+                          <Send className="w-3 h-3" /> Send NDA
                         </button>
                       )}
 
                       <button
                         disabled={applicant.ndaStatus !== 'nda-accepted'}
-                        className={`flex items-center gap-1 border-2 border-primary text-primary py-1 px-2 rounded-xl
-                          ${applicant.ndaStatus !== 'nda-accepted'
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'text-primary hover:bg-primary hover:text-white'}
-  `}
-                        onClick={() => {
-                          closeAllModals();
-                          setSelectedApplicant(applicant);
-                          setSelectedProject(project);
-                          setShowAssignProjectModel(true)
-                        }}
+                        onClick={() => { closeAllModals(); setSelectedApplicant(applicant); setSelectedProject(project); setShowAssignProjectModel(true) }}
+                        className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-all
+                          ${applicant.ndaStatus === 'nda-accepted'
+                            ? 'text-green-400 border-green-500/20 hover:bg-green-500/10 cursor-pointer'
+                            : 'text-slate-600 border-slate-700/50 cursor-not-allowed opacity-40'
+                          }`}
                       >
-                        <Eye className='w-4 h-4' />
-                        Assign Project
+                        <UserCheck className="w-3 h-3" /> Assign
                       </button>
-
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           )
-
         })}
       </div>
 
+      {/* ── NDA Review Modal ── */}
       {showNDAModel && selectedApplicant && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center'>
-          <div className='absolute inset-0 bg-black opacity-70 transition-opacity duration-300' />
-          <div className='min-w-3xl bg-white z-50 p-5 rounded-2xl'>
-            <div className='flex items-center justify-between border-b pb-2 border-border'>
-              <h1 className='text-2xl font-semibold'>NDA Response Review</h1>
-              <X className='cursor-pointer' onClick={() => setShowNDAModel(false)} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <Backdrop onClick={() => setShowNDAModel(false)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-800">
+              <div>
+                <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest mb-1">Review</p>
+                <h2 className="text-xl font-bold text-white">NDA Response</h2>
+              </div>
+              <button onClick={() => setShowNDAModel(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className='flex items-center gap-3 border border-green-400 bg-green-50 mt-5 rounded-xl p-4'>
-              <CheckCircle className='text-green-400' />
+            <div className="flex items-center gap-3 bg-green-500/5 border border-green-500/20 rounded-xl p-4 mb-5">
+              <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
               <div>
-                <h2 className='font-semibold text-xl'>NDA Accepted</h2>
-                <p className='text-text-secondary'>NDA accepted {timeAgo(selectedApplicant.ndaAcceptedDate)}</p>
+                <p className="text-sm font-semibold text-white">NDA Accepted</p>
+                <p className="text-xs text-slate-500 mt-0.5">Accepted {timeAgo(selectedApplicant.ndaAcceptedDate)}</p>
               </div>
             </div>
 
-            <h2 className='font-semibold text-xl mt-6 mb-3'>NDA Document</h2>
-
-            <div className='flex items-center justify-between border-2 border-border p-4 rounded-xl'>
-              <div className='flex items-center gap-3'>
-                <FileText className='text-primary' />
+            <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-3">NDA Document</p>
+            <div className="flex items-center justify-between bg-slate-800/60 border border-slate-700/50 rounded-xl px-4 py-3 mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-red-400" />
+                </div>
                 <div>
-                  <h2 className='text-secondary'>Signed NDA Agreement</h2>
-                  <p className='text-text-secondary'>PDF • 1.2 MB</p>
+                  <p className="text-sm font-medium text-white">Signed NDA Agreement</p>
+                  <p className="text-xs text-slate-500">PDF · 1.2 MB</p>
                 </div>
               </div>
-              <button
-                className='border-2 border-primary text-primary py-2 px-4 rounded-xl cursor-pointer hover:bg-primary hover:text-white transition-all duration-300'
-              >
+              <button className="text-xs text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg hover:bg-blue-500/10 transition-colors cursor-pointer">
                 Download
               </button>
             </div>
 
-            <div className=' bg-blue-50 p-4 rounded-xl mt-5'>
-              <h2 className='font-semibold text-xl mb-3'>Applicant Information</h2>
-              <p className='text-text-secondary'><span className='text-secondary'>Name:</span> {selectedApplicant.name}</p>
-              <p className='text-text-secondary my-2'><span className='text-secondary'>University:</span> {selectedApplicant.university}</p>
-              <p className='flex items-center text-text-secondary'><span className='text-secondary'>Rating:</span> <Star className='w-4 h-4 ml-2 fill-current text-yellow-400' /> {selectedApplicant.rating}</p>
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 mb-5">
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-3">Applicant Information</p>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {selectedApplicant.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{selectedApplicant.name}</p>
+                  <p className="text-xs text-slate-500">{selectedApplicant.university}</p>
+                </div>
+                <div className="ml-auto flex items-center gap-1 text-yellow-400">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <span className="text-sm font-medium">{selectedApplicant.rating}</span>
+                </div>
+              </div>
             </div>
 
-            <hr className='border border-border my-5' />
-
-            <div className='grid grid-cols-2 gap-3'>
-              <button className='border-2 border-primary py-2 rounded-xl text-primary hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'
-                onClick={() => setShowNDAModel(false)}
-              >
+            <div className="flex gap-3">
+              <button onClick={() => setShowNDAModel(false)} className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 text-sm transition-all cursor-pointer">
                 Close
               </button>
-
-              <button className='flex items-center justify-center gap-2 border-2 border-primary bg-primary text-white py-2 rounded-xl hover:bg-blue-600 cursor-pointer'>
-                <UserCheck />
-                Assign Project
+              <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors cursor-pointer">
+                <UserCheck className="w-4 h-4" /> Assign Project
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {showAssignProjectModel && selectedApplicant && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center'>
-          <div className='absolute inset-0 bg-black opacity-70' />
-          <div className='min-w-4xl bg-white z-50 p-5 rounded-2xl'>
-            <div className='flex items-center justify-between'>
-              <h2 className='text-3xl font-semibold'>Assign project</h2>
-              <X className='cursor-pointer hover:text-red-400' onClick={() => setShowAssignProjectModel(false)} />
+      {/* ── Assign Project Modal ── */}
+      {showAssignProjectModel && selectedApplicant && selectedProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <Backdrop onClick={() => setShowAssignProjectModel(false)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-800">
+              <div>
+                <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest mb-1">Action</p>
+                <h2 className="text-xl font-bold text-white">Assign Project</h2>
+              </div>
+              <button onClick={() => setShowAssignProjectModel(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <hr className='border border-border my-3' />
-
-            <div className='bg-blue-50 border border-primary p-5 rounded-2xl'>
-              <h4 className='font-semibold text-lg mb-2'>Assigning project to : </h4>
-              <div className='flex items-center gap-3'>
-                <div className='w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center'>AJ</div>
+            {/* Assigning to */}
+            <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 mb-4">
+              <p className="text-xs text-slate-500 mb-2">Assigning to</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                  {selectedApplicant.name.slice(0, 2).toUpperCase()}
+                </div>
                 <div>
-                  <p>{selectedApplicant.name}</p>
-                  <p className='text-text-secondary'>{selectedApplicant.university}</p>
+                  <p className="text-sm font-semibold text-white">{selectedApplicant.name}</p>
+                  <p className="text-xs text-slate-500">{selectedApplicant.university}</p>
                 </div>
               </div>
             </div>
 
-            <div className='bg-green-50 p-5 rounded-2xl my-5'>
-              <div className='flex items-center gap-3'>
-                <CheckCircle className='text-accent' />
-                <p className='text-lg font-semibold'>NDA Status : Accepted</p>
+            {/* NDA status */}
+            <div className="flex items-center gap-3 bg-green-500/5 border border-green-500/20 rounded-xl px-4 py-3 mb-4">
+              <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-white">NDA Accepted</p>
+                <p className="text-xs text-slate-500">The student has reviewed and accepted the NDA agreement.</p>
               </div>
-              <p className='text-text-secondary'>The student has reviewed and accepted the NDA agreement.</p>
             </div>
 
-            <div className='border border-border p-5 rounded-2xl'>
-              <p className='text-lg font-semibold mb-2'>Project Details</p>
-              <p className='font-semibold'>Project: <span className='text-text-secondary font-medium'>{selectedProject.title}</span> </p>
-              <p className='font-semibold my-2'>Budget: <span className='text-text-secondary font-medium'>${selectedProject.budget}</span> </p>
-              <p className='font-semibold'>Deadline: <span className='text-text-secondary font-medium'>{selectedProject.deadline}</span> </p>
+            {/* Project details */}
+            <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 mb-4">
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-3">Project Details</p>
+              <p className="text-sm font-medium text-white mb-1">{selectedProject.title}</p>
+              <div className="flex items-center gap-4 mt-2">
+                <span className="text-xs text-green-400 font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" />${selectedProject.budget}</span>
+                <span className="text-xs text-slate-400 flex items-center gap-1"><Clock className="w-3 h-3" />{selectedProject.deadline}</span>
+              </div>
             </div>
 
-            <div className='bg-yellow-50 border border-yellow-400 p-5 rounded-2xl my-5'>
-              <p className='text-text-secondary'>Once assigned, the student will be notified and can start working on the project. Other applicants will be automatically rejected.</p>
+            {/* Warning */}
+            <div className="flex gap-2 bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-4 py-3 mb-5">
+              <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-slate-400 leading-relaxed">Once assigned, the student will be notified and can start working. Other applicants will be automatically rejected.</p>
             </div>
 
-            <div className='flex items-center gap-3'>
-              <button className='flex-1 flex items-center justify-center border-2 border-primary py-2 rounded-xl text-primary hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'
-                onClick={() => setShowAssignProjectModel(false)}
-              >
+            <div className="flex gap-3">
+              <button onClick={() => setShowAssignProjectModel(false)} className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 text-sm transition-all cursor-pointer">
                 Cancel
               </button>
-              <button className='flex flex-1 items-center justify-center gap-3 border-2 border-primary py-2 rounded-xl text-white bg-primary hover:bg-blue-600 cursor-pointer'>
-                <UserCheck />
-                Confirm Assignment
+              <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors cursor-pointer">
+                <UserCheck className="w-4 h-4" /> Confirm Assignment
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* ── Send NDA Modal ── */}
       {showSendNDAModel && selectedApplicant && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center'>
-          <div className='absolute inset-0 bg-black opacity-70 transition-opacity duration-300' />
-          <div className='min-w-3xl bg-white z-50 p-5 rounded-2xl'>
-            <div className='flex items-center justify-between'>
-              <h2 className='text-2xl font-semibold'>Send NDA</h2>
-              <X onClick={() => setShowSendNDAModel(false)} className='hover:text-error cursor-pointer' />
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <Backdrop onClick={() => setShowSendNDAModel(false)} />
+          <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-800">
+              <div>
+                <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest mb-1">NDA</p>
+                <h2 className="text-xl font-bold text-white">Send NDA</h2>
+              </div>
+              <button onClick={() => setShowSendNDAModel(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <hr className='border border-border my-3 ' />
-
-            <div className='bg-blue-50 border border-primary p-3 rounded-2xl'>
-              <p className='text-text-secondary'>Sending NDA to:</p>
-              <p className='font-semibold text-xl'>{selectedApplicant.name}</p>
-              <p>{selectedApplicant.university}</p>
-            </div>
-
-            <div className='my-7'>
-              <p className='mb-3 text-secondary ml-1'>Upload NDA Document</p>
-
-              {!file ? (
-                <div
-                  onClick={() => inputRef.current?.click()}
-                  className='flex flex-col gap-2 justify-center items-center border-2 border-dashed border-border rounded-xl px-3 py-5 hover:border-primary transition-colors duration-300 cursor-pointer'>
-                  <UploadIcon className='w-8 h-8 text-text-secondary' />
-                  <p className='text-secondary'>Click to upload or drag and drop</p>
-                  <p className='text-text-secondary'>.pdf (max 5MB)</p>
-                  <input
-                    type="file"
-                    ref={inputRef}
-                    accept='.pdf'
-                    onChange={handleFileChange}
-                    className='hidden'
-                  />
+            {/* Sending to */}
+            <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 mb-5">
+              <p className="text-xs text-slate-500 mb-2">Sending NDA to</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                  {selectedApplicant.name.slice(0, 2).toUpperCase()}
                 </div>
-              ) : (
-                <div className='border border-border rounded-lg p-4 flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                    <div className='w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center'>
-                      <File className='w-5 h-5 text-primary' />
-                    </div>
-                    <div>
-                      <p className='text-secondary'>{file.name}</p>
-                      <p className='text-text-secondary'>{(file.size / 1024 / 1024).toFixed(2)}MB</p>
-                    </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{selectedApplicant.name}</p>
+                  <p className="text-xs text-slate-500">{selectedApplicant.university}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* File upload */}
+            <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-3">Upload NDA Document</p>
+            {!file ? (
+              <div
+                onClick={() => inputRef.current?.click()}
+                className="flex flex-col items-center justify-center gap-2 border border-dashed border-slate-600 rounded-xl py-8 hover:border-blue-500/40 hover:bg-blue-500/5 transition-all cursor-pointer mb-5"
+              >
+                <UploadIcon className="w-8 h-8 text-slate-600" />
+                <p className="text-sm text-slate-400">Click to upload or drag and drop</p>
+                <p className="text-xs text-slate-600">.pdf (max 5MB)</p>
+                <input type="file" ref={inputRef} accept=".pdf" onChange={handleFileChange} className="hidden" />
+              </div>
+            ) : (
+              <div className="flex items-center justify-between bg-slate-800/60 border border-slate-700/50 rounded-xl px-4 py-3 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center">
+                    <File className="w-4 h-4 text-blue-400" />
                   </div>
-                  <button
-                    onClick={handleRemove}
-                    className='text-error cursor-pointer hover:bg-red-50 p-2 rounded-lg transition-colors'
-                  >
-                    <X className='w-5 h-5' />
-                  </button>
+                  <div>
+                    <p className="text-sm font-medium text-white">{file.name}</p>
+                    <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  </div>
                 </div>
-              )}
+                <button onClick={handleRemove} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-all cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Warning */}
+            <div className="flex gap-2 bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-4 py-3 mb-5">
+              <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-slate-400 leading-relaxed">The applicant will need to review and accept the NDA before proceeding with the project.</p>
             </div>
 
-            <div className='bg-yellow-50 border border-yellow-400 p-4 rounded-xl'>
-              <p className='text-text-secondary'>The applicant will need to review and accept the NDA before proceeding with the project.</p>
-            </div>
-
-            <div className='flex items-center gap-3 mt-4'>
-              <button
-                onClick={() => setShowSendNDAModel(false)}
-                className='flex-1 border-2 border-primary py-2 rounded-xl text-primary hover:bg-primary hover:text-white transition-colors duration-300 cursor-pointer'>
+            <div className="flex gap-3">
+              <button onClick={() => setShowSendNDAModel(false)} className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 text-sm transition-all cursor-pointer">
                 Cancel
               </button>
-
-              <button
-                className='flex-1 flex items-center justify-center gap-3 border-2 border-primary bg-primary text-white py-2 rounded-xl hover:bg-blue-600 transition-colors duration-300 cursor-pointer'>
-                <Send className='w-5 h-5' />
-                Send NDA
+              <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors cursor-pointer">
+                <Send className="w-4 h-4" /> Send NDA
               </button>
             </div>
-
           </div>
         </div>
       )}
